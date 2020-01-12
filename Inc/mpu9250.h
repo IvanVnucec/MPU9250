@@ -170,4 +170,18 @@ void MPU9250_setMagCalX(float bias, float scaleFactor);
 void MPU9250_setMagCalY(float bias, float scaleFactor);
 void MPU9250_setMagCalZ(float bias, float scaleFactor);
 
+int MPU9250FIFO_enableFifo(uint32_t accel, uint32_t gyro, uint32_t mag,
+		uint32_t temp);
+int MPU9250FIFO_readFifo(void);
+void MPU9250FIFO_getFifoAccelX_mss(uint32_t *size, float* data);
+void MPU9250FIFO_getFifoAccelY_mss(uint32_t *size, float* data);
+void MPU9250FIFO_getFifoAccelZ_mss(uint32_t *size, float* data);
+void MPU9250FIFO_getFifoGyroX_rads(uint32_t *size, float* data);
+void MPU9250FIFO_getFifoGyroY_rads(uint32_t *size, float* data);
+void MPU9250FIFO_getFifoGyroZ_rads(uint32_t *size, float* data);
+void MPU9250FIFO_getFifoMagX_uT(uint32_t *size, float* data);
+void MPU9250FIFO_getFifoMagY_uT(uint32_t *size, float* data);
+void MPU9250FIFO_getFifoMagZ_uT(uint32_t *size, float* data);
+void MPU9250FIFO_getFifoTemperature_C(uint32_t *size, float* data);
+
 #endif /* MPU9250_H_ */

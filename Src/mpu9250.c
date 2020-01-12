@@ -112,29 +112,14 @@ uint32_t _tSize;
 
 
 /* Private function prototypes -----------------------------------------------*/
-int MPU9250_writeRegister(uint8_t subAddress, uint8_t data);
-int MPU9250_readRegisters(uint8_t subAddress, uint8_t count, uint8_t* dest);
-int MPU9250_writeAK8963Register(uint8_t subAddress, uint8_t data);
-int MPU9250_readAK8963Registers(uint8_t subAddress, uint8_t count,
+static int MPU9250_writeRegister(uint8_t subAddress, uint8_t data);
+static int MPU9250_readRegisters(uint8_t subAddress, uint8_t count, uint8_t* dest);
+static int MPU9250_writeAK8963Register(uint8_t subAddress, uint8_t data);
+static int MPU9250_readAK8963Registers(uint8_t subAddress, uint8_t count,
 		uint8_t* dest);
-int MPU9250_whoAmI();
-int MPU9250_whoAmIAK8963();
-float map(float val, float x_start, float x_end, float y_start, float y_end);
-
-int MPU9250FIFO_enableFifo(uint32_t accel, uint32_t gyro, uint32_t mag,
-		uint32_t temp);
-int MPU9250FIFO_readFifo(void);
-void MPU9250FIFO_getFifoAccelX_mss(uint32_t *size, float* data);
-void MPU9250FIFO_getFifoAccelY_mss(uint32_t *size, float* data);
-void MPU9250FIFO_getFifoAccelZ_mss(uint32_t *size, float* data);
-void MPU9250FIFO_getFifoGyroX_rads(uint32_t *size, float* data);
-void MPU9250FIFO_getFifoGyroY_rads(uint32_t *size, float* data);
-void MPU9250FIFO_getFifoGyroZ_rads(uint32_t *size, float* data);
-void MPU9250FIFO_getFifoMagX_uT(uint32_t *size, float* data);
-void MPU9250FIFO_getFifoMagY_uT(uint32_t *size, float* data);
-void MPU9250FIFO_getFifoMagZ_uT(uint32_t *size, float* data);
-void MPU9250FIFO_getFifoTemperature_C(uint32_t *size, float* data);
-
+static int MPU9250_whoAmI();
+static int MPU9250_whoAmIAK8963();
+static float map(float val, float x_start, float x_end, float y_start, float y_end);
 
 /* Private user code ---------------------------------------------------------*/
 
