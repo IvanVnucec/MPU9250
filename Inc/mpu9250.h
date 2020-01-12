@@ -42,6 +42,9 @@ typedef enum LpAccelOdr {
 	LP_ACCEL_ODR_500HZ = 11
 } LpAccelOdr_t;
 
+// MPU9250 I2C Address
+#define MPU9250_I2C_ADDRESS 0x68
+
 // MPU9250 registers
 #define ACCEL_OUT 			0x3B
 #define GYRO_OUT 			0x43

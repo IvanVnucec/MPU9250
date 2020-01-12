@@ -21,7 +21,6 @@
 
 /* Private variables ---------------------------------------------------------*/
 // i2c
-uint8_t _address = 0x68;
 const uint32_t _i2cRate = 400000; // 400 kHz
 uint32_t _numBytes; // number of bytes received from I2C
 
@@ -117,8 +116,8 @@ static int MPU9250_readRegisters(uint8_t subAddress, uint8_t count, uint8_t* des
 static int MPU9250_writeAK8963Register(uint8_t subAddress, uint8_t data);
 static int MPU9250_readAK8963Registers(uint8_t subAddress, uint8_t count,
 		uint8_t* dest);
-static int MPU9250_whoAmI();
-static int MPU9250_whoAmIAK8963();
+static uint8_t MPU9250_whoAmI(void);
+static uint8_t MPU9250_whoAmIAK8963(void);
 static float map(float val, float x_start, float x_end, float y_start, float y_end);
 
 /* Private user code ---------------------------------------------------------*/
@@ -127,116 +126,146 @@ static float map(float val, float x_start, float x_end, float y_start, float y_e
 
 
 /* starts communication with the MPU-9250 */
-int MPU9250_begin() {
+int MPU9250_begin(void) {
 
 	// select clock source to gyro
 	if (MPU9250_writeRegister(PWR_MGMNT_1, CLOCK_SEL_PLL) < 0) {
 		return -1;
 	}
+
 	// enable I2C master mode
 	if (MPU9250_writeRegister(USER_CTRL, I2C_MST_EN) < 0) {
 		return -2;
 	}
+
 	// set the I2C bus speed to 400 kHz
 	if (MPU9250_writeRegister(I2C_MST_CTRL, I2C_MST_CLK) < 0) {
 		return -3;
 	}
+
 	// set AK8963 to Power Down
 	MPU9250_writeAK8963Register(AK8963_CNTL1, AK8963_PWR_DOWN);
+
 	// reset the MPU9250
 	MPU9250_writeRegister(PWR_MGMNT_1, PWR_RESET);
+
 	// wait for MPU-9250 to come back up
 	HAL_Delay(1);
+
 	// reset the AK8963
 	MPU9250_writeAK8963Register(AK8963_CNTL2, AK8963_RESET);
+
 	// select clock source to gyro
 	if (MPU9250_writeRegister(PWR_MGMNT_1, CLOCK_SEL_PLL) < 0) {
 		return -4;
 	}
+
 	// check the WHO AM I byte, expected value is 0x71 (decimal 113) or 0x73 (decimal 115)
 	if ((MPU9250_whoAmI() != 113) && (MPU9250_whoAmI() != 115)) {
 		return -5;
 	}
+
 	// enable accelerometer and gyro
 	if (MPU9250_writeRegister(PWR_MGMNT_2, SEN_ENABLE) < 0) {
 		return -6;
 	}
+
 	// setting accel range to 16G as default
 	if (MPU9250_writeRegister(ACCEL_CONFIG, ACCEL_FS_SEL_16G) < 0) {
 		return -7;
 	}
+
 	_accelScale = G * 16.0f / 32767.5f; // setting the accel scale to 16G
 	_accelRange = ACCEL_RANGE_16G;
+
 	// setting the gyro range to 2000DPS as default
 	if (MPU9250_writeRegister(GYRO_CONFIG, GYRO_FS_SEL_2000DPS) < 0) {
 		return -8;
 	}
+
 	_gyroScale = 2000.0f / 32767.5f * _d2r; // setting the gyro scale to 2000DPS
 	_gyroRange = GYRO_RANGE_2000DPS;
+
 	// setting bandwidth to 184Hz as default
 	if (MPU9250_writeRegister(ACCEL_CONFIG2, ACCEL_DLPF_184) < 0) {
 		return -9;
 	}
+
 	if (MPU9250_writeRegister(CONFIG, GYRO_DLPF_184) < 0) { // setting gyro bandwidth to 184Hz
 		return -10;
 	}
+
 	_bandwidth = DLPF_BANDWIDTH_184HZ;
+
 	// setting the sample rate divider to 0 as default
 	if (MPU9250_writeRegister(SMPDIV, 0x00) < 0) {
 		return -11;
 	}
+
 	_srd = 0;
 	// enable I2C master mode
 	if (MPU9250_writeRegister(USER_CTRL, I2C_MST_EN) < 0) {
 		return -12;
 	}
+
 	// set the I2C bus speed to 400 kHz
 	if (MPU9250_writeRegister(I2C_MST_CTRL, I2C_MST_CLK) < 0) {
 		return -13;
 	}
+
 	// check AK8963 WHO AM I register, expected value is 0x48 (decimal 72)
 	if (MPU9250_whoAmIAK8963() != 72) {
 		return -14;
 	}
+
 	/* get the magnetometer calibration */
 	// set AK8963 to Power Down
 	if (MPU9250_writeAK8963Register(AK8963_CNTL1, AK8963_PWR_DOWN) < 0) {
 		return -15;
 	}
+
 	HAL_Delay(100); // long wait between AK8963 mode changes
+
 	// set AK8963 to FUSE ROM access
 	if (MPU9250_writeAK8963Register(AK8963_CNTL1, AK8963_FUSE_ROM) < 0) {
 		return -16;
+
 	}
 	HAL_Delay(100); // long wait between AK8963 mode changes
+
 	// read the AK8963 ASA registers and compute magnetometer scale factors
 	MPU9250_readAK8963Registers(AK8963_ASA, 3, _buffer);
-	_magScaleX = ((((float) _buffer[0]) - 128.0f) / (256.0f) + 1.0f) * 4912.0f
-			/ 32760.0f; // micro Tesla
-	_magScaleY = ((((float) _buffer[1]) - 128.0f) / (256.0f) + 1.0f) * 4912.0f
-			/ 32760.0f; // micro Tesla
-	_magScaleZ = ((((float) _buffer[2]) - 128.0f) / (256.0f) + 1.0f) * 4912.0f
-			/ 32760.0f; // micro Tesla
+	_magScaleX = ((((float) _buffer[0]) - 128.0f) / (256.0f) + 1.0f) * 4912.0f / 32760.0f; // micro Tesla
+	_magScaleY = ((((float) _buffer[1]) - 128.0f) / (256.0f) + 1.0f) * 4912.0f / 32760.0f; // micro Tesla
+	_magScaleZ = ((((float) _buffer[2]) - 128.0f) / (256.0f) + 1.0f) * 4912.0f / 32760.0f; // micro Tesla
+
 	// set AK8963 to Power Down
 	if (MPU9250_writeAK8963Register(AK8963_CNTL1, AK8963_PWR_DOWN) < 0) {
 		return -17;
 	}
+
 	HAL_Delay(100); // long wait between AK8963 mode changes
+
 	// set AK8963 to 16 bit resolution, 100 Hz update rate
 	if (MPU9250_writeAK8963Register(AK8963_CNTL1, AK8963_CNT_MEAS2) < 0) {
 		return -18;
 	}
+
 	HAL_Delay(100); // long wait between AK8963 mode changes
+
 	// select clock source to gyro
 	if (MPU9250_writeRegister(PWR_MGMNT_1, CLOCK_SEL_PLL) < 0) {
 		return -19;
 	}
+
 	// instruct the MPU9250 to get 7 bytes of data from the AK8963 at the sample rate
 	MPU9250_readAK8963Registers(AK8963_HXL, 7, _buffer);
+
 	// estimate gyro bias
 	if (MPU9250_calibrateGyro() < 0) {
 		return -20;
 	}
+
 	// successful init, return 1
 	return 1;
 }
@@ -482,58 +511,65 @@ int MPU9250_enableWakeOnMotion(float womThresh_mg, LpAccelOdr_t odr) {
 }
 
 /* configures and enables the FIFO buffer  */
-int MPU9250FIFO_enableFifo(uint32_t accel, uint32_t gyro, uint32_t mag,
-		uint32_t temp) {
+int MPU9250FIFO_enableFifo(uint32_t accel, uint32_t gyro, uint32_t mag, uint32_t temp) {
 	if (MPU9250_writeRegister(USER_CTRL, (0x40 | I2C_MST_EN)) < 0) {
 		return -1;
 	}
+
 	if (MPU9250_writeRegister(FIFO_EN,
-			(accel * FIFO_ACCEL) | (gyro * FIFO_GYRO) | (mag * FIFO_MAG)
-					| (temp * FIFO_TEMP)) < 0) {
+			(accel * FIFO_ACCEL)	|
+			(gyro  * FIFO_GYRO) 	|
+			(mag   * FIFO_MAG) 		|
+			(temp  * FIFO_TEMP)	) < 0) {
+
 		return -2;
 	}
+
 	_enFifoAccel = accel;
 	_enFifoGyro = gyro;
 	_enFifoMag = mag;
 	_enFifoTemp = temp;
 	_fifoFrameSize = accel * 6 + gyro * 6 + mag * 7 + temp * 2;
+
 	return 1;
 }
 
 /* reads the most current data from MPU9250 and stores in buffer */
 int MPU9250_readSensor() {
+	uint8_t data[21];
+
 	// grab the data from the MPU9250
-	if (MPU9250_readRegisters(ACCEL_OUT, 21, _buffer) < 0) {
+	if (MPU9250_readRegisters(ACCEL_OUT, 21, data) < 0) {
 		return -1;
 	}
+
 	// combine into 16 bit values
-	_axcounts = (((int16_t) _buffer[0]) << 8) | _buffer[1];
-	_aycounts = (((int16_t) _buffer[2]) << 8) | _buffer[3];
-	_azcounts = (((int16_t) _buffer[4]) << 8) | _buffer[5];
-	_tcounts = (((int16_t) _buffer[6]) << 8) | _buffer[7];
-	_gxcounts = (((int16_t) _buffer[8]) << 8) | _buffer[9];
-	_gycounts = (((int16_t) _buffer[10]) << 8) | _buffer[11];
-	_gzcounts = (((int16_t) _buffer[12]) << 8) | _buffer[13];
-	_hxcounts = (((int16_t) _buffer[15]) << 8) | _buffer[14];
-	_hycounts = (((int16_t) _buffer[17]) << 8) | _buffer[16];
-	_hzcounts = (((int16_t) _buffer[19]) << 8) | _buffer[18];
+	_axcounts = (((int16_t) data[0])  << 8) | data[1];
+	_aycounts = (((int16_t) data[2])  << 8) | data[3];
+	_azcounts = (((int16_t) data[4])  << 8) | data[5];
+	_tcounts  = (((int16_t) data[6])  << 8) | data[7];
+	_gxcounts = (((int16_t) data[8])  << 8) | data[9];
+	_gycounts = (((int16_t) data[10]) << 8) | data[11];
+	_gzcounts = (((int16_t) data[12]) << 8) | data[13];
+	_hxcounts = (((int16_t) data[15]) << 8) | data[14];
+	_hycounts = (((int16_t) data[17]) << 8) | data[16];
+	_hzcounts = (((int16_t) data[19]) << 8) | data[18];
+
 	// transform and convert to float values
-	_ax = (((float) (tX[0] * _axcounts + tX[1] * _aycounts + tX[2] * _azcounts)
-			* _accelScale) - _axb) * _axs;
-	_ay = (((float) (tY[0] * _axcounts + tY[1] * _aycounts + tY[2] * _azcounts)
-			* _accelScale) - _ayb) * _ays;
-	_az = (((float) (tZ[0] * _axcounts + tZ[1] * _aycounts + tZ[2] * _azcounts)
-			* _accelScale) - _azb) * _azs;
-	_gx = ((float) (tX[0] * _gxcounts + tX[1] * _gycounts + tX[2] * _gzcounts)
-			* _gyroScale) - _gxb;
-	_gy = ((float) (tY[0] * _gxcounts + tY[1] * _gycounts + tY[2] * _gzcounts)
-			* _gyroScale) - _gyb;
-	_gz = ((float) (tZ[0] * _gxcounts + tZ[1] * _gycounts + tZ[2] * _gzcounts)
-			* _gyroScale) - _gzb;
+	_ax = (((float) (tX[0] * _axcounts + tX[1] * _aycounts + tX[2] * _azcounts) * _accelScale) - _axb) * _axs;
+	_ay = (((float) (tY[0] * _axcounts + tY[1] * _aycounts + tY[2] * _azcounts) * _accelScale) - _ayb) * _ays;
+	_az = (((float) (tZ[0] * _axcounts + tZ[1] * _aycounts + tZ[2] * _azcounts) * _accelScale) - _azb) * _azs;
+
+	_gx = ((float) (tX[0] * _gxcounts + tX[1] * _gycounts + tX[2] * _gzcounts) * _gyroScale) - _gxb;
+	_gy = ((float) (tY[0] * _gxcounts + tY[1] * _gycounts + tY[2] * _gzcounts) * _gyroScale) - _gyb;
+	_gz = ((float) (tZ[0] * _gxcounts + tZ[1] * _gycounts + tZ[2] * _gzcounts) * _gyroScale) - _gzb;
+
 	_hx = (((float) (_hxcounts) * _magScaleX) - _hxb) * _hxs;
 	_hy = (((float) (_hycounts) * _magScaleY) - _hyb) * _hys;
 	_hz = (((float) (_hzcounts) * _magScaleZ) - _hzb) * _hzs;
-	_t = ((((float) _tcounts) - _tempOffset) / _tempScale) + _tempOffset;
+
+	_t  = ((((float) _tcounts) - _tempOffset) / _tempScale) + _tempOffset;
+
 	return 1;
 }
 
@@ -1070,34 +1106,41 @@ void MPU9250_setMagCalZ(float bias, float scaleFactor) {
 
 /* writes a byte to MPU9250 register given a register address and data */
 int MPU9250_writeRegister(uint8_t subAddress, uint8_t data) {
+	uint8_t value;
 
 	/*
 	 DevAddress Target device address: The device 7 bits address value
 	 in datasheet must be shifted to the left before calling the interface
 	 */
 
-	HAL_I2C_Master_Transmit(&hi2c1, _address, &data, 1, 100);
+	if (HAL_I2C_Master_Transmit(&hi2c1, MPU9250_I2C_ADDRESS, &data, 1, 100) != HAL_OK) {
+		return -1;
+	}
 
 	HAL_Delay(10);
 
 	/* read back the register */
-	MPU9250_readRegisters(subAddress, 1, _buffer);
+	if (MPU9250_readRegisters(subAddress, 1, &value) < 0) {
+		return -2;
+	}
+
 	/* check the read back register against the written register */
-	if (_buffer[0] == data) {
+	if (value == data) {
 		return 1;
 	} else {
-		return -1;
+		return -3;
 	}
 }
 
 /* reads registers from MPU9250 given a starting register address, number of bytes, and a pointer to store data */
 int MPU9250_readRegisters(uint8_t subAddress, uint8_t count, uint8_t* dest) {
+	HAL_StatusTypeDef ret;
+
 	/*
 	 DevAddress Target device address: The device 7 bits address value
 	 in datasheet must be shifted to the left before calling the interface
 	 */
-	HAL_StatusTypeDef ret = HAL_I2C_Mem_Read(&hi2c1, _address, subAddress,
-			sizeof(uint8_t), dest, count, 100);
+	ret = HAL_I2C_Mem_Read(&hi2c1, MPU9250_I2C_ADDRESS, subAddress, sizeof(uint8_t), dest, count, 100);
 
 	if (ret != HAL_OK) {
 		return -1;	// failure
@@ -1136,8 +1179,7 @@ int MPU9250_writeAK8963Register(uint8_t subAddress, uint8_t data) {
 }
 
 /* reads registers from the AK8963 */
-int MPU9250_readAK8963Registers(uint8_t subAddress, uint8_t count,
-		uint8_t* dest) {
+int MPU9250_readAK8963Registers(uint8_t subAddress, uint8_t count, uint8_t* dest) {
 	// set slave 0 to the AK8963 and set for read
 	if (MPU9250_writeRegister(I2C_SLV0_ADDR, AK8963_I2C_ADDR | I2C_READ_FLAG)
 			< 0) {
@@ -1154,27 +1196,32 @@ int MPU9250_readAK8963Registers(uint8_t subAddress, uint8_t count,
 	HAL_Delay(1); // takes some time for these registers to fill
 	// read the bytes off the MPU9250 EXT_SENS_DATA registers
 	_status = MPU9250_readRegisters(EXT_SENS_DATA_00, count, dest);
+
 	return _status;
 }
 
 /* gets the MPU9250 WHO_AM_I register value, expected to be 0x71 */
-int MPU9250_whoAmI() {
+static uint8_t MPU9250_whoAmI(void) {
+	uint8_t value;
+
 	// read the WHO AM I register
-	if (MPU9250_readRegisters(WHO_AM_I, 1, _buffer) < 0) {
+	if (MPU9250_readRegisters(WHO_AM_I, 1, &value) < 0) {
 		return -1;
 	}
 	// return the register value
-	return _buffer[0];
+	return value;
 }
 
 /* gets the AK8963 WHO_AM_I register value, expected to be 0x48 */
-int MPU9250_whoAmIAK8963() {
+static uint8_t MPU9250_whoAmIAK8963(void) {
+	uint8_t value;
+
 	// read the WHO AM I register
-	if (MPU9250_readAK8963Registers(AK8963_WHO_AM_I, 1, _buffer) < 0) {
+	if (MPU9250_readAK8963Registers(AK8963_WHO_AM_I, 1, &value) < 0) {
 		return -1;
 	}
 	// return the register value
-	return _buffer[0];
+	return value;
 }
 
 /* transforms val from x_start and x_end to y */

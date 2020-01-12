@@ -7,8 +7,8 @@ Startup
 .project
 mpu9250.ioc
 STM32F103C8TX_FLASH.ld
-mpu9250.ioc.elf.cfg
-mpu9250.ioc.elf.launch
+mpu9250.elf.cfg
+mpu9250.elf.launch
 
 Inc/*
 !Inc/mpu9250.h

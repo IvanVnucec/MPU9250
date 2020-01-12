@@ -92,6 +92,9 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
+  int status = MPU9250_begin();
+
+  status = MPU9250_readSensor();
 
   /* USER CODE END 2 */
 
