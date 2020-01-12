@@ -5,15 +5,15 @@ Startup
 .cproject
 .mxproject
 .project
-i2c-bit-banging.ioc
+mpu9250.ioc
 STM32F103C8TX_FLASH.ld
-i2c-bit-banging.elf.cfg
-i2c-bit-banging.elf.launch
+mpu9250.ioc.elf.cfg
+mpu9250.ioc.elf.launch
 
 Inc/*
-!Inc/i2c_bit_bang.h
+!Inc/mpu9250.h
 !Inc/main.h
 
 Src/*
-!Src/i2c_bit_bang.c
+!Src/mpu9250.c
 !Src/main.c
