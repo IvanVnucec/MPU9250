@@ -244,7 +244,7 @@ int MPU9250_begin(void) {
 		return -17;
 	}
 
-	HAL_Delay(100); // long wait between AK8963 mode changes
+	HAL_Delay(200); // long wait between AK8963 mode changes
 
 	// set AK8963 to 16 bit resolution, 100 Hz update rate
 	if (MPU9250_writeAK8963Register(AK8963_CNTL1, AK8963_CNT_MEAS2) < 0) {
@@ -1106,43 +1106,33 @@ void MPU9250_setMagCalZ(float bias, float scaleFactor) {
 
 /* writes a byte to MPU9250 register given a register address and data */
 int MPU9250_writeRegister(uint8_t subAddress, uint8_t data) {
-	uint8_t value;
+	HAL_StatusTypeDef retval;
 
 	/*
 	 DevAddress Target device address: The device 7 bits address value
 	 in datasheet must be shifted to the left before calling the interface
 	 */
 
-	if (HAL_I2C_Master_Transmit(&hi2c1, MPU9250_I2C_ADDRESS, &data, 1, 100) != HAL_OK) {
-		return -1;
-	}
+	retval = HAL_I2C_Mem_Write(&hi2c1, MPU9250_I2C_ADDRESS << 1, subAddress, 1, &data, 1, 100);
 
-	HAL_Delay(10);
-
-	/* read back the register */
-	if (MPU9250_readRegisters(subAddress, 1, &value) < 0) {
-		return -2;
-	}
-
-	/* check the read back register against the written register */
-	if (value == data) {
-		return 1;
+	if (retval != HAL_OK) {
+		return -1;	// failure
 	} else {
-		return -3;
+		return 1;	// success
 	}
 }
 
 /* reads registers from MPU9250 given a starting register address, number of bytes, and a pointer to store data */
 int MPU9250_readRegisters(uint8_t subAddress, uint8_t count, uint8_t* dest) {
-	HAL_StatusTypeDef ret;
+	HAL_StatusTypeDef retval;
 
 	/*
 	 DevAddress Target device address: The device 7 bits address value
 	 in datasheet must be shifted to the left before calling the interface
 	 */
-	ret = HAL_I2C_Mem_Read(&hi2c1, MPU9250_I2C_ADDRESS, subAddress, sizeof(uint8_t), dest, count, 100);
+	retval = HAL_I2C_Mem_Read(&hi2c1, MPU9250_I2C_ADDRESS << 1, subAddress, sizeof(uint8_t), dest, count, 100);
 
-	if (ret != HAL_OK) {
+	if (retval != HAL_OK) {
 		return -1;	// failure
 	} else {
 		return 1;	// success
@@ -1151,6 +1141,8 @@ int MPU9250_readRegisters(uint8_t subAddress, uint8_t count, uint8_t* dest) {
 
 /* writes a register to the AK8963 given a register address and data */
 int MPU9250_writeAK8963Register(uint8_t subAddress, uint8_t data) {
+	uint8_t value;
+
 	// set slave 0 to the AK8963 and set for write
 	if (MPU9250_writeRegister(I2C_SLV0_ADDR, AK8963_I2C_ADDR) < 0) {
 		return -1;
@@ -1167,19 +1159,13 @@ int MPU9250_writeAK8963Register(uint8_t subAddress, uint8_t data) {
 	if (MPU9250_writeRegister(I2C_SLV0_CTRL, I2C_SLV0_EN | (uint8_t) 1) < 0) {
 		return -4;
 	}
-	// read the register and confirm
-	if (MPU9250_readAK8963Registers(subAddress, 1, _buffer) < 0) {
-		return -5;
-	}
-	if (_buffer[0] == data) {
-		return 1;
-	} else {
-		return -6;
-	}
+
+	return 1;	// success
 }
 
 /* reads registers from the AK8963 */
 int MPU9250_readAK8963Registers(uint8_t subAddress, uint8_t count, uint8_t* dest) {
+
 	// set slave 0 to the AK8963 and set for read
 	if (MPU9250_writeRegister(I2C_SLV0_ADDR, AK8963_I2C_ADDR | I2C_READ_FLAG)
 			< 0) {
@@ -1193,11 +1179,11 @@ int MPU9250_readAK8963Registers(uint8_t subAddress, uint8_t count, uint8_t* dest
 	if (MPU9250_writeRegister(I2C_SLV0_CTRL, I2C_SLV0_EN | count) < 0) {
 		return -3;
 	}
-	HAL_Delay(1); // takes some time for these registers to fill
-	// read the bytes off the MPU9250 EXT_SENS_DATA registers
-	_status = MPU9250_readRegisters(EXT_SENS_DATA_00, count, dest);
 
-	return _status;
+	HAL_Delay(1); // takes some time for these registers to fill
+
+	// read the bytes off the MPU9250 EXT_SENS_DATA registers
+	return MPU9250_readRegisters(EXT_SENS_DATA_00, count, dest);
 }
 
 /* gets the MPU9250 WHO_AM_I register value, expected to be 0x71 */
