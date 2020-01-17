@@ -95,6 +95,7 @@ int main(void)
   MX_I2C1_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
+
   MPU9250_begin();
 
   /* USER CODE END 2 */
@@ -104,26 +105,10 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  MPU9250_readSensor();
-	  float temp = MPU9250_getAccelX_mss();
-
-	  uint8_t buffer[8];
-
-	  buffer[0] = (int)temp / 10 + '0';
-	  buffer[1] = (int)temp % 10 + '0';
-	  buffer[2] = '.';
-	  buffer[3] = (int)((temp - (int)temp) * 10) + '0';
-	  buffer[4] = (int)((temp - (int)temp) * 100) % 10 + '0';
-	  buffer[5] = (int)((temp - (int)temp) * 1000) % 10 + '0';
-	  buffer[6] = '\n';
-	  buffer[7] = '\0';
-
-
-	  CDC_Transmit_FS(buffer, sizeof(buffer));
-
-	  HAL_Delay(100);
 
     /* USER CODE BEGIN 3 */
+	  MPU9250_readSensor();
+	  float x = MPU9250_getAccelZ_mss();
   }
   /* USER CODE END 3 */
 }

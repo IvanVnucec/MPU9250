@@ -90,7 +90,7 @@ typedef enum LpAccelOdr {
 #define DIS_GYRO 			0x07
 #define USER_CTRL 			0x6A
 #define I2C_MST_EN 			0x20
-#define I2C_MST_CLK 		0x0D
+#define I2C_MST_CLK 		0x08
 #define I2C_MST_CTRL 		0x24
 #define I2C_SLV0_ADDR 		0x25
 #define I2C_SLV0_REG 		0x26
