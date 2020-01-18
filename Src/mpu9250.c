@@ -1118,9 +1118,14 @@ int MPU9250_writeRegister(uint8_t subAddress, uint8_t data) {
 
 	num_of_tries = 5;
 	do {
-		retval = HAL_I2C_Mem_Write(&hi2c1, MPU9250_I2C_ADDRESS << 1, subAddress, I2C_MEMADD_SIZE_8BIT, &data, 1, 25);
+		retval = HAL_I2C_Mem_Write(&hi2c1, MPU9250_I2C_ADDRESS << 1, subAddress, I2C_MEMADD_SIZE_8BIT, &data, 1, 500);
 		num_of_tries--;
-	} while(retval != HAL_OK && num_of_tries != 0);
+		if (retval != HAL_OK) {
+			HAL_Delay(20);
+		} else {
+			break;
+		}
+	} while(num_of_tries != 0);
 
 	if (num_of_tries == 0) {
 		return -1;	// failure
@@ -1140,9 +1145,14 @@ int MPU9250_readRegisters(uint8_t subAddress, uint8_t count, uint8_t* dest) {
 	 */
 	num_of_tries = 5;
 	 do {
-		retval = HAL_I2C_Mem_Read(&hi2c1, MPU9250_I2C_ADDRESS << 1, subAddress, I2C_MEMADD_SIZE_8BIT, dest, count, 25);
+		retval = HAL_I2C_Mem_Read(&hi2c1, MPU9250_I2C_ADDRESS << 1, subAddress, I2C_MEMADD_SIZE_8BIT, dest, count, 500);
 		num_of_tries--;
-	} while(retval != HAL_OK && num_of_tries != 0);
+		if (retval != HAL_OK) {
+			HAL_Delay(20);
+		} else {
+			break;
+		}
+	} while(num_of_tries != 0);
 
 	if (num_of_tries == 0) {
 		return -1;	// failure

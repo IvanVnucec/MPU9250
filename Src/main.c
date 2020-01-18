@@ -55,6 +55,10 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
+void print_usb(char *buffer, uint8_t len);
+void print_float(float val);
+void test_success(void);
+void test_failed(void);
 
 /* USER CODE END PFP */
 
@@ -96,7 +100,24 @@ int main(void)
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
 
-  MPU9250_begin();
+  int i = 0;
+  int val;
+  while (MPU9250_begin() < 0) {
+	  i++;
+	  if (i > 2) {
+		  test_failed();
+	  }
+  }
+
+  i = 0;
+  while (MPU9250_readSensor() < 0) {
+	  i++;
+	  if (i > 2) {
+		  test_failed();
+	  }
+  }
+
+  test_success();
 
   /* USER CODE END 2 */
 
@@ -107,8 +128,6 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  MPU9250_readSensor();
-	  float x = MPU9250_getAccelZ_mss();
   }
   /* USER CODE END 3 */
 }
@@ -158,6 +177,54 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+void print_usb(char *buffer, uint8_t len) {
+
+	CDC_Transmit_FS(buffer, len);
+
+	return;
+}
+
+void print_float(float val){
+	uint8_t buffer[10];
+
+    if (val < 0) {
+        val *= -1;
+        buffer[0] = '-';
+    } else {
+        buffer[0] = ' ';
+    }
+
+	buffer[1] = (int)val / 10 + '0';
+	buffer[2] = (int)val % 10 + '0';
+	buffer[3] = '.';
+	buffer[4] = (int)((val - (int)val) * 10) + '0';
+	buffer[5] = (int)((val - (int)val) * 100) % 10 + '0';
+	buffer[6] = (int)((val - (int)val) * 1000) % 10 + '0';
+	buffer[7] = (int)((val - (int)val) * 10000) % 10 + '0';
+	buffer[8] = '\n';
+	buffer[9] = '\0';
+
+	print_usb(buffer, 10);
+
+	return;
+}
+
+void test_success(void) {
+	while(1) {
+		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+		HAL_Delay(500);
+	}
+}
+
+void test_failed(void) {
+	while(1) {
+		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+		HAL_Delay(100);
+	}
+}
+
+
 
 /* USER CODE END 4 */
 
