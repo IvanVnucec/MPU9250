@@ -209,7 +209,7 @@ int MPU9250_begin(void) {
 		return -12;
 	}
 
-	// set the I2C bus speed to 258 kHz
+	// set the I2C bus speed to 400 kHz
 	if (MPU9250_writeRegister(I2C_MST_CTRL, I2C_MST_CLK) < 0) {
 		return -13;
 	}

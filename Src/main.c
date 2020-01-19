@@ -28,6 +28,7 @@
 /* USER CODE BEGIN Includes */
 #include "mpu9250.h"
 #include "usbd_cdc_if.h"
+#include <string.h>
 
 /* USER CODE END Includes */
 
@@ -55,10 +56,12 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-void print_usb(char *buffer, uint8_t len);
-void print_float(float val);
+void print_usb(uint8_t *buffer, uint8_t len);
+void float_to_string(uint8_t *buffer, float val);
 void test_success(void);
 void test_failed(void);
+void print_float_usb(float number);
+void println_float_usb(float number);
 
 /* USER CODE END PFP */
 
@@ -101,7 +104,6 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   int i = 0;
-  int val;
   while (MPU9250_begin() < 0) {
 	  i++;
 	  if (i > 2) {
@@ -119,6 +121,11 @@ int main(void)
 
   test_success();
 
+  uint8_t comma = ',';
+
+  MPU9250_setAccelRange(ACCEL_FS_SEL_16G);
+  MPU9250_setGyroRange(GYRO_FS_SEL_2000DPS);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -128,6 +135,30 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  MPU9250_readSensor();
+
+	  print_float_usb(MPU9250_getAccelX_mss());
+	  print_usb(&comma, 1);
+	  print_float_usb(MPU9250_getAccelY_mss());
+	  print_usb(&comma, 1);
+	  print_float_usb(MPU9250_getAccelZ_mss());
+	  print_usb(&comma, 1);
+
+	  print_float_usb(MPU9250_getGyroX_rads());
+	  print_usb(&comma, 1);
+	  print_float_usb(MPU9250_getGyroY_rads());
+	  print_usb(&comma, 1);
+	  print_float_usb(MPU9250_getGyroZ_rads());
+	  print_usb(&comma, 1);
+
+	  print_float_usb(MPU9250_getMagX_uT());
+	  print_usb(&comma, 1);
+	  print_float_usb(MPU9250_getMagY_uT());
+	  print_usb(&comma, 1);
+	  print_float_usb(MPU9250_getMagZ_uT());
+	  print_usb(&comma, 1);
+
+	  println_float_usb(MPU9250_getTemperature_C());
   }
   /* USER CODE END 3 */
 }
@@ -178,15 +209,33 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
-void print_usb(char *buffer, uint8_t len) {
+void print_float_usb(float number) {
+	uint8_t string[11];
 
-	CDC_Transmit_FS(buffer, len);
+	float_to_string(string, number);
+
+	print_usb(string, 11);
+}
+
+void println_float_usb(float number) {
+	uint8_t string[12];
+
+	float_to_string(string, number);
+
+	string[11] = '\n';
+
+	print_usb(string, 12);
+}
+
+void print_usb(uint8_t *buffer, uint8_t len) {
+
+	while (CDC_Transmit_FS(buffer, len) != USBD_OK);
 
 	return;
 }
 
-void print_float(float val){
-	uint8_t buffer[10];
+// string should be 11 bytes in length
+void float_to_string(uint8_t *buffer, float val){
 
     if (val < 0) {
         val *= -1;
@@ -195,33 +244,28 @@ void print_float(float val){
         buffer[0] = ' ';
     }
 
-	buffer[1] = (int)val / 10 + '0';
-	buffer[2] = (int)val % 10 + '0';
-	buffer[3] = '.';
-	buffer[4] = (int)((val - (int)val) * 10) + '0';
-	buffer[5] = (int)((val - (int)val) * 100) % 10 + '0';
-	buffer[6] = (int)((val - (int)val) * 1000) % 10 + '0';
-	buffer[7] = (int)((val - (int)val) * 10000) % 10 + '0';
-	buffer[8] = '\n';
-	buffer[9] = '\0';
-
-	print_usb(buffer, 10);
+    buffer[1]  = (int)val / 10000 + '0';
+    buffer[2]  = (int)val % 10000 / 1000 + '0';
+    buffer[3]  = (int)val % 1000 / 100 + '0';
+	buffer[4]  = (int)val % 100 / 10 + '0';
+	buffer[5]  = (int)val % 10 + '0';
+	buffer[6]  = '.';
+	buffer[7]  = (int)((val - (int)val) * 10) + '0';
+	buffer[8]  = (int)((val - (int)val) * 100) % 10 + '0';
+	buffer[9]  = (int)((val - (int)val) * 1000) % 10 + '0';
+	buffer[10] = (int)((val - (int)val) * 10000) % 10 + '0';
 
 	return;
 }
 
 void test_success(void) {
-	while(1) {
-		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-		HAL_Delay(500);
-	}
+	// Turn on LED
+	HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 }
 
 void test_failed(void) {
-	while(1) {
-		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-		HAL_Delay(100);
-	}
+	// Turn off LED
+	HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
 }
 
 
