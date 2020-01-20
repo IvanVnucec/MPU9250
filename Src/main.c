@@ -77,6 +77,7 @@ void println_float_usb(float number);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+  struct MPU9250_Handle_s MPU9250_Handle;
 
   /* USER CODE END 1 */
   
@@ -104,7 +105,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   int i = 0;
-  while (MPU9250_begin() < 0) {
+  while (MPU9250_begin(&MPU9250_Handle) < 0) {
 	  i++;
 	  if (i > 2) {
 		  test_failed();
@@ -112,7 +113,7 @@ int main(void)
   }
 
   i = 0;
-  while (MPU9250_readSensor() < 0) {
+  while (MPU9250_readSensor(&MPU9250_Handle) < 0) {
 	  i++;
 	  if (i > 2) {
 		  test_failed();
@@ -123,8 +124,8 @@ int main(void)
 
   uint8_t comma = ',';
 
-  MPU9250_setAccelRange(ACCEL_FS_SEL_16G);
-  MPU9250_setGyroRange(GYRO_FS_SEL_2000DPS);
+  MPU9250_setAccelRange(ACCEL_FS_SEL_16G, &MPU9250_Handle);
+  MPU9250_setGyroRange(GYRO_FS_SEL_2000DPS, &MPU9250_Handle);
 
   /* USER CODE END 2 */
 
@@ -135,30 +136,30 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  MPU9250_readSensor();
+	  MPU9250_readSensor(&MPU9250_Handle)
 
-	  print_float_usb(MPU9250_getAccelX_mss());
+	  print_float_usb(MPU9250_getAccelX_mss(&MPU9250_Handle);
 	  print_usb(&comma, 1);
-	  print_float_usb(MPU9250_getAccelY_mss());
+	  print_float_usb(MPU9250_getAccelY_mss(&MPU9250_Handle));
 	  print_usb(&comma, 1);
-	  print_float_usb(MPU9250_getAccelZ_mss());
-	  print_usb(&comma, 1);
-
-	  print_float_usb(MPU9250_getGyroX_rads());
-	  print_usb(&comma, 1);
-	  print_float_usb(MPU9250_getGyroY_rads());
-	  print_usb(&comma, 1);
-	  print_float_usb(MPU9250_getGyroZ_rads());
+	  print_float_usb(MPU9250_getAccelZ_mss(&MPU9250_Handle));
 	  print_usb(&comma, 1);
 
-	  print_float_usb(MPU9250_getMagX_uT());
+	  print_float_usb(MPU9250_getGyroX_rads(&MPU9250_Handle));
 	  print_usb(&comma, 1);
-	  print_float_usb(MPU9250_getMagY_uT());
+	  print_float_usb(MPU9250_getGyroY_rads(&MPU9250_Handle));
 	  print_usb(&comma, 1);
-	  print_float_usb(MPU9250_getMagZ_uT());
+	  print_float_usb(MPU9250_getGyroZ_rads(&MPU9250_Handle));
 	  print_usb(&comma, 1);
 
-	  println_float_usb(MPU9250_getTemperature_C());
+	  print_float_usb(MPU9250_getMagX_uT(&MPU9250_Handle));
+	  print_usb(&comma, 1);
+	  print_float_usb(MPU9250_getMagY_uT(&MPU9250_Handle));
+	  print_usb(&comma, 1);
+	  print_float_usb(MPU9250_getMagZ_uT(&MPU9250_Handle));
+	  print_usb(&comma, 1);
+
+	  println_float_usb(MPU9250_getTemperature_C(&MPU9250_Handle));
   }
   /* USER CODE END 3 */
 }
