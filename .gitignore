@@ -10,6 +10,7 @@ STM32F103C8TX_FLASH.ld
 mpu9250.elf.cfg
 mpu9250.elf.launch
 
+
 Inc/*
 !Inc/mpu9250.h
 !Inc/main.h
@@ -17,3 +18,5 @@ Inc/*
 Src/*
 !Src/mpu9250.c
 !Src/main.c
+
+Middlewares/*
