@@ -10,8 +10,6 @@
 
 #include <stdint.h>
 
-
-
 typedef enum GyroRange {
 	GYRO_RANGE_250DPS, GYRO_RANGE_500DPS, GYRO_RANGE_1000DPS, GYRO_RANGE_2000DPS
 } GyroRange_t;
@@ -47,7 +45,7 @@ typedef enum LpAccelOdr {
 
 struct MPU9250_Handle_s {
 	// i2c
-	const uint32_t _i2cRate = 400000; // 400 kHz
+	uint32_t _i2cRate; // 400 kHz
 	uint32_t _numBytes; // number of bytes received from I2C
 
 	// track success of interacting with sensor
@@ -75,8 +73,8 @@ struct MPU9250_Handle_s {
 	float _accelScale;
 	float _gyroScale;
 	float _magScaleX, _magScaleY, _magScaleZ;
-	const float _tempScale = 333.87f;
-	const float _tempOffset = 21.0f;
+	float _tempScale;
+	float _tempOffset;
 
 	// configuration
 	AccelRange_t _accelRange;
@@ -85,7 +83,7 @@ struct MPU9250_Handle_s {
 	uint8_t _srd;
 
 	// gyro bias estimation
-	uint32_t _numSamples = 100;
+	uint32_t _numSamples;
 	double _gxbD, _gybD, _gzbD;
 	float _gxb, _gyb, _gzb;
 
@@ -94,34 +92,34 @@ struct MPU9250_Handle_s {
 	float _axmax, _aymax, _azmax;
 	float _axmin, _aymin, _azmin;
 	float _axb, _ayb, _azb;
-	float _axs = 1.0f;
-	float _ays = 1.0f;
-	float _azs = 1.0f;
+	float _axs;
+	float _ays;
+	float _azs;
 
 	// magnetometer bias and scale factor estimation
-	uint16_t _maxCounts = 1000;
-	float _deltaThresh = 0.3f;
-	uint8_t _coeff = 8;
+	uint16_t _maxCounts;
+	float _deltaThresh;
+	uint8_t _coeff;
 	uint16_t _counter;
 	float _framedelta, _delta;
 	float _hxfilt, _hyfilt, _hzfilt;
 	float _hxmax, _hymax, _hzmax;
 	float _hxmin, _hymin, _hzmin;
 	float _hxb, _hyb, _hzb;
-	float _hxs = 1.0f;
-	float _hys = 1.0f;
-	float _hzs = 1.0f;
+	float _hxs;
+	float _hys;
+	float _hzs;
 	float _avgs;
 
 	// transformation matrix
 	/* transform the accel and gyro axes to match the magnetometer axes */
-	const int16_t tX[3] = { 0, 1, 0 };
-	const int16_t tY[3] = { 1, 0, 0 };
-	const int16_t tZ[3] = { 0, 0, -1 };
+	int16_t _tX[3];
+	int16_t _tY[3];
+	int16_t _tZ[3];
 
 	// constants
-	const float G = 9.807f;
-	const float _d2r = 3.14159265359f / 180.0f;
+	float _G;
+	float _d2r;
 
 	// fifo
 	uint32_t _enFifoAccel, _enFifoGyro, _enFifoMag, _enFifoTemp;
@@ -220,30 +218,30 @@ struct MPU9250_Handle_s {
 #define AK8963_ASA 			0x10
 #define AK8963_WHO_AM_I 	0x00
 
-int MPU9250_begin(struct MPU9250_handle_s *MPU9250_Handle);
+int MPU9250_begin(struct MPU9250_Handle_s *MPU9250_Handle);
 
-int MPU9250_setAccelRange(AccelRange_t range, struct MPU9250_handle_s *MPU9250_Handle);
-int MPU9250_setGyroRange(GyroRange_t range, struct MPU9250_handle_s *MPU9250_Handle);
-int MPU9250_setDlpfBandwidth(DlpfBandwidth_t bandwidth, struct MPU9250_handle_s *MPU9250_Handle);
-int MPU9250_setSrd(uint8_t srd, struct MPU9250_handle_s *MPU9250_Handle);
+int MPU9250_setAccelRange(AccelRange_t range, struct MPU9250_Handle_s *MPU9250_Handle);
+int MPU9250_setGyroRange(GyroRange_t range, struct MPU9250_Handle_s *MPU9250_Handle);
+int MPU9250_setDlpfBandwidth(DlpfBandwidth_t bandwidth, struct MPU9250_Handle_s *MPU9250_Handle);
+int MPU9250_setSrd(uint8_t srd, struct MPU9250_Handle_s *MPU9250_Handle);
 
 int MPU9250_enableDataReadyInterrupt(void);
 int MPU9250_disableDataReadyInterrupt(void);
 
-int MPU9250_enableWakeOnMotion(float womThresh_mg, LpAccelOdr_t odr, struct MPU9250_handle_s *MPU9250_Handle);
+int MPU9250_enableWakeOnMotion(float womThresh_mg, LpAccelOdr_t odr, struct MPU9250_Handle_s *MPU9250_Handle);
 
-int MPU9250_readSensor(struct MPU9250_handle_s *MPU9250_Handle);
+int MPU9250_readSensor(struct MPU9250_Handle_s *MPU9250_Handle);
 
-float MPU9250_getAccelX_mss(const struct MPU9250_handle_s *MPU9250_Handle);
-float MPU9250_getAccelY_mss(const struct MPU9250_handle_s *MPU9250_Handle);
-float MPU9250_getAccelZ_mss(const struct MPU9250_handle_s *MPU9250_Handle);
-float MPU9250_getGyroX_rads(const struct MPU9250_handle_s *MPU9250_Handle);
-float MPU9250_getGyroY_rads(const struct MPU9250_handle_s *MPU9250_Handle);
-float MPU9250_getGyroZ_rads(const struct MPU9250_handle_s *MPU9250_Handle);
-float MPU9250_getMagX_uT(const struct MPU9250_handle_s *MPU9250_Handle);
-float MPU9250_getMagY_uT(const struct MPU9250_handle_s *MPU9250_Handle);
-float MPU9250_getMagZ_uT(const struct MPU9250_handle_s *MPU9250_Handle);
-float MPU9250_getTemperature_C(const struct MPU9250_handle_s *MPU9250_Handle);
+float MPU9250_getAccelX_mss(const struct MPU9250_Handle_s *MPU9250_Handle);
+float MPU9250_getAccelY_mss(const struct MPU9250_Handle_s *MPU9250_Handle);
+float MPU9250_getAccelZ_mss(const struct MPU9250_Handle_s *MPU9250_Handle);
+float MPU9250_getGyroX_rads(const struct MPU9250_Handle_s *MPU9250_Handle);
+float MPU9250_getGyroY_rads(const struct MPU9250_Handle_s *MPU9250_Handle);
+float MPU9250_getGyroZ_rads(const struct MPU9250_Handle_s *MPU9250_Handle);
+float MPU9250_getMagX_uT(const struct MPU9250_Handle_s *MPU9250_Handle);
+float MPU9250_getMagY_uT(const struct MPU9250_Handle_s *MPU9250_Handle);
+float MPU9250_getMagZ_uT(const struct MPU9250_Handle_s *MPU9250_Handle);
+float MPU9250_getTemperature_C(const struct MPU9250_Handle_s *MPU9250_Handle);
 
 int MPU9250_calibrateGyro();
 
@@ -251,9 +249,9 @@ float MPU9250_getGyroBiasX_rads(const struct MPU9250_Handle_s *MPU9250_Handle);
 float MPU9250_getGyroBiasY_rads(const struct MPU9250_Handle_s *MPU9250_Handle);
 float MPU9250_getGyroBiasZ_rads(const struct MPU9250_Handle_s *MPU9250_Handle);
 
-void MPU9250_setGyroBiasX_rads(float bias);
-void MPU9250_setGyroBiasY_rads(float bias);
-void MPU9250_setGyroBiasZ_rads(float bias);
+void MPU9250_setGyroBiasX_rads(float bias, struct MPU9250_Handle_s *MPU9250_Handle);
+void MPU9250_setGyroBiasY_rads(float bias, struct MPU9250_Handle_s *MPU9250_Handle);
+void MPU9250_setGyroBiasZ_rads(float bias, struct MPU9250_Handle_s *MPU9250_Handle);
 
 int MPU9250_calibrateAccel(struct MPU9250_Handle_s *MPU9250_Handle);
 
@@ -282,22 +280,22 @@ void MPU9250_setMagCalY(float bias, float scaleFactor, struct MPU9250_Handle_s *
 void MPU9250_setMagCalZ(float bias, float scaleFactor, struct MPU9250_Handle_s *MPU9250_Handle);
 
 int MPU9250FIFO_enableFifo(uint32_t accel, uint32_t gyro, uint32_t mag,
-		uint32_t temp, struct MPU9250_handle_s *MPU9250_Handle);
+		uint32_t temp, struct MPU9250_Handle_s *MPU9250_Handle);
 
-int MPU9250FIFO_readFifo(struct MPU9250_handle_s *MPU9250_Handle);
+int MPU9250FIFO_readFifo(struct MPU9250_Handle_s *MPU9250_Handle);
 
-void MPU9250FIFO_getFifoAccelX_mss(uint32_t *size, float* data, struct MPU9250_handle_s *MPU9250_Handle);
-void MPU9250FIFO_getFifoAccelY_mss(uint32_t *size, float* data, struct MPU9250_handle_s *MPU9250_Handle);
-void MPU9250FIFO_getFifoAccelZ_mss(uint32_t *size, float* data, struct MPU9250_handle_s *MPU9250_Handle);
+void MPU9250FIFO_getFifoAccelX_mss(uint32_t *size, float* data, struct MPU9250_Handle_s *MPU9250_Handle);
+void MPU9250FIFO_getFifoAccelY_mss(uint32_t *size, float* data, struct MPU9250_Handle_s *MPU9250_Handle);
+void MPU9250FIFO_getFifoAccelZ_mss(uint32_t *size, float* data, struct MPU9250_Handle_s *MPU9250_Handle);
 
-void MPU9250FIFO_getFifoGyroX_rads(uint32_t *size, float* data, struct MPU9250_handle_s *MPU9250_Handle);
-void MPU9250FIFO_getFifoGyroY_rads(uint32_t *size, float* data, struct MPU9250_handle_s *MPU9250_Handle);
-void MPU9250FIFO_getFifoGyroZ_rads(uint32_t *size, float* data, struct MPU9250_handle_s *MPU9250_Handle);
+void MPU9250FIFO_getFifoGyroX_rads(uint32_t *size, float* data, struct MPU9250_Handle_s *MPU9250_Handle);
+void MPU9250FIFO_getFifoGyroY_rads(uint32_t *size, float* data, struct MPU9250_Handle_s *MPU9250_Handle);
+void MPU9250FIFO_getFifoGyroZ_rads(uint32_t *size, float* data, struct MPU9250_Handle_s *MPU9250_Handle);
 
-void MPU9250FIFO_getFifoMagX_uT(uint32_t *size, float* data, struct MPU9250_handle_s *MPU9250_Handle);
-void MPU9250FIFO_getFifoMagY_uT(uint32_t *size, float* data, struct MPU9250_handle_s *MPU9250_Handle);
-void MPU9250FIFO_getFifoMagZ_uT(uint32_t *size, float* data, struct MPU9250_handle_s *MPU9250_Handle);
+void MPU9250FIFO_getFifoMagX_uT(uint32_t *size, float* data, struct MPU9250_Handle_s *MPU9250_Handle);
+void MPU9250FIFO_getFifoMagY_uT(uint32_t *size, float* data, struct MPU9250_Handle_s *MPU9250_Handle);
+void MPU9250FIFO_getFifoMagZ_uT(uint32_t *size, float* data, struct MPU9250_Handle_s *MPU9250_Handle);
 
-void MPU9250FIFO_getFifoTemperature_C(uint32_t *size, float* data, struct MPU9250_handle_s *MPU9250_Handle);
+void MPU9250FIFO_getFifoTemperature_C(uint32_t *size, float* data, struct MPU9250_Handle_s *MPU9250_Handle);
 
 #endif /* MPU9250_H_ */

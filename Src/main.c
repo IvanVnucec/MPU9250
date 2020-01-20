@@ -124,8 +124,14 @@ int main(void)
 
   uint8_t comma = ',';
 
-  MPU9250_setAccelRange(ACCEL_FS_SEL_16G, &MPU9250_Handle);
-  MPU9250_setGyroRange(GYRO_FS_SEL_2000DPS, &MPU9250_Handle);
+  // setting the accelerometer full scale range to +/-8G
+  MPU9250_setAccelRange(ACCEL_RANGE_8G, &MPU9250_Handle);
+  // setting the gyroscope full scale range to +/-500 deg/s
+  MPU9250_setGyroRange(GYRO_RANGE_500DPS, &MPU9250_Handle);
+  // setting DLPF bandwidth to 20 Hz
+  MPU9250_setDlpfBandwidth(DLPF_BANDWIDTH_20HZ, &MPU9250_Handle);
+  // setting SRD to 19 for a 50 Hz update rate
+  MPU9250_setSrd(19, &MPU9250_Handle);
 
   /* USER CODE END 2 */
 
@@ -136,9 +142,9 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  MPU9250_readSensor(&MPU9250_Handle)
+	  MPU9250_readSensor(&MPU9250_Handle);
 
-	  print_float_usb(MPU9250_getAccelX_mss(&MPU9250_Handle);
+	  print_float_usb(MPU9250_getAccelX_mss(&MPU9250_Handle));
 	  print_usb(&comma, 1);
 	  print_float_usb(MPU9250_getAccelY_mss(&MPU9250_Handle));
 	  print_usb(&comma, 1);
