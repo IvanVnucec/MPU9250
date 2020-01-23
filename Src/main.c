@@ -109,6 +109,8 @@ int main(void)
 	  i++;
 	  if (i > 2) {
 		  test_failed();
+		  while(1)
+			  ;
 	  }
   }
 
@@ -117,12 +119,12 @@ int main(void)
 	  i++;
 	  if (i > 2) {
 		  test_failed();
+		  while(1)
+			  ;
 	  }
   }
 
   test_success();
-
-  uint8_t comma = ',';
 
   // setting the accelerometer full scale range to +/-8G
   MPU9250_setAccelRange(ACCEL_RANGE_8G, &MPU9250_Handle);
@@ -145,27 +147,19 @@ int main(void)
 	  MPU9250_readSensor(&MPU9250_Handle);
 
 	  print_float_usb(MPU9250_getAccelX_mss(&MPU9250_Handle));
-	  print_usb(&comma, 1);
 	  print_float_usb(MPU9250_getAccelY_mss(&MPU9250_Handle));
-	  print_usb(&comma, 1);
 	  print_float_usb(MPU9250_getAccelZ_mss(&MPU9250_Handle));
-	  print_usb(&comma, 1);
 
 	  print_float_usb(MPU9250_getGyroX_rads(&MPU9250_Handle));
-	  print_usb(&comma, 1);
 	  print_float_usb(MPU9250_getGyroY_rads(&MPU9250_Handle));
-	  print_usb(&comma, 1);
 	  print_float_usb(MPU9250_getGyroZ_rads(&MPU9250_Handle));
-	  print_usb(&comma, 1);
 
 	  print_float_usb(MPU9250_getMagX_uT(&MPU9250_Handle));
-	  print_usb(&comma, 1);
 	  print_float_usb(MPU9250_getMagY_uT(&MPU9250_Handle));
-	  print_usb(&comma, 1);
 	  print_float_usb(MPU9250_getMagZ_uT(&MPU9250_Handle));
-	  print_usb(&comma, 1);
 
-	  println_float_usb(MPU9250_getTemperature_C(&MPU9250_Handle));
+	  print_float_usb(MPU9250_getTemperature_C(&MPU9250_Handle));
+
   }
   /* USER CODE END 3 */
 }
@@ -217,11 +211,8 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 
 void print_float_usb(float number) {
-	uint8_t string[11];
 
-	float_to_string(string, number);
-
-	print_usb(string, 11);
+	print_usb((uint8_t *)&number, sizeof(float));
 }
 
 void println_float_usb(float number) {
@@ -235,8 +226,7 @@ void println_float_usb(float number) {
 }
 
 void print_usb(uint8_t *buffer, uint8_t len) {
-
-	while (CDC_Transmit_FS(buffer, len) != USBD_OK);
+	while (CDC_Transmit_FS(buffer, len) == USBD_BUSY);
 
 	return;
 }

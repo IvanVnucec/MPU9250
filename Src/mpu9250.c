@@ -105,7 +105,7 @@ static int MPU9250_writeAK8963Register(uint8_t subAddress, uint8_t data) {
 
 
 /* reads registers from the AK8963 */
-static int MPU9250_readAK8963Registers(uint8_t subAddress, uint8_t count, uint8_t* dest) {
+static int MPU9250_readAK8963Registers(uint8_t subAddress, uint8_t count, uint8_t *dest) {
 
 	// set slave 0 to the AK8963 and set for read
 	if (MPU9250_writeRegister(I2C_SLV0_ADDR, AK8963_I2C_ADDR | I2C_READ_FLAG)
@@ -155,7 +155,7 @@ static uint8_t MPU9250_whoAmIAK8963(void) {
 
 
 /* transforms val from x_start and x_end to y */
-float map(float val, float x_start, float x_end, float y_start, float y_end) {
+static float map(float val, float x_start, float x_end, float y_start, float y_end) {
 	float ret = y_start;
 
 	if (val >= x_start && val <= x_end && x_start != x_end) {
@@ -181,6 +181,9 @@ int MPU9250_begin(struct MPU9250_Handle_s *MPU9250_Handle) {
 	MPU9250_Handle->_numSamples = 100;
 
 	// accel bias and scale factor estimation
+	MPU9250_Handle->_axb = 0.0f;
+	MPU9250_Handle->_ayb = 0.0f;
+	MPU9250_Handle->_azb = 0.0f;
 	MPU9250_Handle->_axs = 1.0f;
 	MPU9250_Handle->_ays = 1.0f;
 	MPU9250_Handle->_azs = 1.0f;
@@ -192,6 +195,9 @@ int MPU9250_begin(struct MPU9250_Handle_s *MPU9250_Handle) {
 	MPU9250_Handle->_hxs = 1.0f;
 	MPU9250_Handle->_hys = 1.0f;
 	MPU9250_Handle->_hzs = 1.0f;
+	MPU9250_Handle->_hxb = 0.0f;
+	MPU9250_Handle->_hyb = 0.0f;
+	MPU9250_Handle->_hzb = 0.0f;
 
 	// transformation matrix
 	/* transform the accel and gyro axes to match the magnetometer axes */
@@ -331,7 +337,7 @@ int MPU9250_begin(struct MPU9250_Handle_s *MPU9250_Handle) {
 		return -17;
 	}
 
-	HAL_Delay(200); // long wait between AK8963 mode changes
+	HAL_Delay(100); // long wait between AK8963 mode changes
 
 	// set AK8963 to 16 bit resolution, 100 Hz update rate
 	if (MPU9250_writeAK8963Register(AK8963_CNTL1, AK8963_CNT_MEAS2) < 0) {
