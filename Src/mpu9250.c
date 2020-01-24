@@ -168,6 +168,94 @@ static float map(float val, float x_start, float x_end, float y_start, float y_e
 
 /* starts communication with the MPU-9250 */
 int MPU9250_begin(struct MPU9250_Handle_s *MPU9250_Handle) {
+	// i2c
+	MPU9250_Handle->_i2cRate = 0; // 400 kHz
+	MPU9250_Handle->_numBytes = 0; // number of bytes received from I2C
+
+	// track success of interacting with sensor
+	MPU9250_Handle->_status = 0;
+
+	// data counts
+	int16_t _axcounts, _aycounts, _azcounts;
+	int16_t _gxcounts, _gycounts, _gzcounts;
+	int16_t _hxcounts, _hycounts, _hzcounts;
+	int16_t _tcounts;
+
+	// data buffer
+	float _ax, _ay, _az;
+	float _gx, _gy, _gz;
+	float _hx, _hy, _hz;
+	float _t;
+
+	// wake on motion
+	uint8_t _womThreshold;
+
+	// scale factors
+	float _accelScale;
+	float _gyroScale;
+	float _magScaleX, _magScaleY, _magScaleZ;
+	float _tempScale;
+	float _tempOffset;
+
+	// configuration
+	AccelRange_t _accelRange;
+	GyroRange_t _gyroRange;
+	DlpfBandwidth_t _bandwidth;
+	uint8_t _srd;
+
+	// gyro bias estimation
+	uint32_t _numSamples;
+	double _gxbD, _gybD, _gzbD;
+	float _gxb, _gyb, _gzb;
+
+	// accel bias and scale factor estimation
+	double _axbD, _aybD, _azbD;
+	float _axmax, _aymax, _azmax;
+	float _axmin, _aymin, _azmin;
+	float _axb, _ayb, _azb;
+	float _axs;
+	float _ays;
+	float _azs;
+
+	// magnetometer bias and scale factor estimation
+	MPU9250_Handle->_maxCounts = 0x0000;
+	MPU9250_Handle->_deltaThresh = 0.0f;
+	MPU9250_Handle->_coeff = 0x00;
+	MPU9250_Handle->_counter = 0x0000;
+	MPU9250_Handle->_framedelta = 0.0f;
+	MPU9250_Handle->_delta = 0.0f;
+	MPU9250_Handle->_hxfilt = 0.0f;
+	MPU9250_Handle->_hyfilt = 0.0f;
+	MPU9250_Handle->_hzfilt = 0.0f;
+	MPU9250_Handle->_hxmax = 0.0f;
+	MPU9250_Handle->_hymax = 0.0f;
+	MPU9250_Handle->_hzmax = 0.0f;
+	MPU9250_Handle->_hxmin = 0.0f;
+	MPU9250_Handle->_hymin = 0.0f;
+	MPU9250_Handle->_hzmin = 0.0f;
+	MPU9250_Handle->_hxb = 0.0f;
+	MPU9250_Handle->_hyb = 0.0f;
+	MPU9250_Handle->_hzb = 0.0f;
+	MPU9250_Handle->_hxs = 0.0f;
+	MPU9250_Handle->_hys = 0.0f;
+	MPU9250_Handle->_hzs = 0.0f;
+	MPU9250_Handle->_avgs = 0.0f;
+
+	// constants
+	MPU9250_Handle->_G = 0.0f;
+	MPU9250_Handle->_d2r = 0.0f;
+
+	// fifo
+	MPU9250_Handle->_enFifoAccel = 0;
+	MPU9250_Handle->_enFifoGyro = 0; 
+	MPU9250_Handle->_enFifoMag = 0;
+	MPU9250_Handle->_enFifoTemp = 0;
+	MPU9250_Handle->_fifoSize = 0;
+	MPU9250_Handle->_fifoFrameSize = 0;
+	MPU9250_Handle->_aSize = 0;
+	MPU9250_Handle->_gSize = 0;
+	MPU9250_Handle->_hSize = 0;
+	MPU9250_Handle->_tSize = 0;
 
 	// Init struct constants
 	// i2c
