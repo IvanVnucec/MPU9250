@@ -22,14 +22,18 @@ Simply clone or download this library into your libraries folder.
 ### Common Setup Functions
 The following functions are used to setup the MPU-9250 sensor. These should be called once before data collection. The *begin* function should always be used. Optionally, the *setAccelRange* and *setGyroRange*, *setDlpfBandwidth*, and *setSrd* functions can be used to set the accelerometer and gyroscope full scale ranges, DLPF bandwidth, and SRD to values other than default. The *enableDataReadyInterrupt* and *disableDataReadyInterrupt* control whether the MPU-9250 generates an interrupt on data ready. The *enableWakeOnMotion* puts the MPU-9250 into a low power mode and enables an interrupt when motion detected is above a given threshold. Finally, *enableFifo* sets up and enables the FIFO buffer. These functions are described in detail, below.
 
-<b>struct MPU9250_Handle_s *MPU9250_Handle**
+**struct MPU9250_Handle_s *MPU9250_Handle**
 This handler is used when calling MPU9250 functions. Handler should be initialized somewere in the main.c file.
 
 ```C
 struct MPU9250_Handle_s MPU9250_Handle;
 ```
 
+<<<<<<< HEAD
 <b>int begin(struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**int begin(struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This should be called in your setup function. It initializes communication with the MPU-9250, sets up the sensor for reading data, and estimates the gyro bias, which is removed from the sensor data. This function returns a positive value on a successful initialization and returns a negative value on an unsuccesful initialization. If unsuccessful, please check your wiring or try resetting power to the sensor. The following is an example of setting up the MPU-9250.
 
 ```C
@@ -39,7 +43,11 @@ status = MPU9250_begin(&MPU9250_Handle);
 
 #### Configuration Functions
 
+<<<<<<< HEAD
 <b>(optional) int MPU9250_setAccelRange(AccelRange range, struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) int MPU9250_setAccelRange(AccelRange range, struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function sets the accelerometer full scale range to the given  value. By default, if this function is not called, a full scale range of +/- 16 g will be used. The enumerated accelerometer full scale ranges are:
 
 | Accelerometer Name | Accelerometer Full Scale Range | 
@@ -55,7 +63,11 @@ This function returns a positive value on success and a negative value on failur
 status = MPU9250_setAccelRange(ACCEL_RANGE_8G, &MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) int MPU9250_setGyroRange(GyroRange_t range, struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) int MPU9250_setGyroRange(GyroRange_t range, struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function sets the gyroscope full scale range to the given  value. By default, if this function is not called, a full scale range of +/- 2000 deg/s will be used. The enumerated gyroscope full scale ranges are:
 
 | Gyroscope Name     | Gyroscope Full Scale Range |
@@ -71,7 +83,11 @@ This function returns a positive value on success and a negative value on failur
 status = MPU9250_setGyroRange(GYRO_RANGE_250DPS, &MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) int MPU9250_setDlpfBandwidth(DlpfBandwidth_t bandwidth, struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) int MPU9250_setDlpfBandwidth(DlpfBandwidth_t bandwidth, struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This is an optional function to set the programmable Digital Low Pass Filter (DLPF) bandwidth. By default, if this function is not called, a DLPF bandwidth of 184 Hz is used. The following DLPF bandwidths are supported:
 
 | Bandwidth Name | DLPF Bandwidth | Gyroscope Delay | Accelerometer Delay | Temperature Bandwidth | Temperature Delay |
@@ -89,7 +105,11 @@ This function returns a positive value on success and a negative value on failur
 status = MPU9250_setDlpfBandwidth(DLPF_BANDWIDTH_20HZ, &MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) int MPU9250_setSrd(uint8_t srd, struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) int MPU9250_setSrd(uint8_t srd, struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This is an optional function to set the data output rate. The data output rate is set by a sample rate divider, *uint8_t SRD*. The data output rate is then given by:
 
 *Data Output Rate = 1000 / (1 + SRD)*
@@ -108,14 +128,22 @@ This function returns a positive value on success and a negative value on failur
 status = MPU9250_setSrd(9, &MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) int MPU9250_enableDataReadyInterrupt(struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) int MPU9250_enableDataReadyInterrupt(struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 An interrupt is tied to the data output rate. The MPU-9250 *INT* pin will issue a 50us pulse when data is ready. This is extremely useful for using interrupts to clock data collection that should occur at a regular interval. This function enables this interrupt, which will occur at a frequency given by the SRD. This function returns a positive value on success and a negative value on failure. The following is an example of enabling the data ready interrupt.
 
 ```C
 status = MPU9250_enableDataReadyInterrupt(&MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) int MPU9250_disableDataReadyInterrupt(struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) int MPU9250_disableDataReadyInterrupt(struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function disables the data ready interrupt, described above. This function returns a positive value on success and a negative value on failure. The following is an example of disabling the data ready interrupt.
 
 ```C
@@ -124,14 +152,22 @@ status = MPU9250_disableDataReadyInterrupt(&MPU9250_Handle);
 
 #### Calibration Functions
 
+<<<<<<< HEAD
 <b>(optional) int MPU9250_calibrateGyro(struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) int MPU9250_calibrateGyro(struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 The gyro bias is automatically estimated during the *MPU9250_begin()* function and removed from sensor measurements. This function will re-estimate the gyro bias and remove the new bias from future sensor measurements. The sensor should be stationary during this process. This function returns a positive value on success and a negative value on failure. The following is an example of estimating new gyro biases.
 
 ```C
 status = MPU9250_calibrateGyro(&MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) float MPU9250_getGyroBiasX_rads(struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) float MPU9250_getGyroBiasX_rads(struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function returns the current gyro bias in the X direction in units of rad/s. 
 
 ```C
@@ -139,7 +175,11 @@ float gxb;
 gxb = MPU9250_getGyroBiasX_rads(&MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) float MPU9250_getGyroBiasY_rads(struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) float MPU9250_getGyroBiasY_rads(struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function returns the current gyro bias in the Y direction in units of rad/s.
 
 ```C
@@ -147,7 +187,11 @@ float gyb;
 gyb = MPU9250_getGyroBiasY_rads(&MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) float MPU9250_getGyroBiasZ_rads(struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) float MPU9250_getGyroBiasZ_rads(struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function returns the current gyro bias in the Z direction in units of rad/s.
 
 ```C
@@ -155,7 +199,11 @@ float gzb;
 gzb = MPU9250_getGyroBiasZ_rads(&MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) void MPU9250_setGyroBiasX_rads(float bias, struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) void MPU9250_setGyroBiasX_rads(float bias, struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function sets the gyro bias being used in the X direction to the input value in units of rad/s.
 
 ```C
@@ -163,7 +211,11 @@ float gxb = 0.001; // gyro bias of 0.001 rad/s
 MPU9250_setGyroBiasX_rads(gxb, &MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) void MPU9250_setGyroBiasY_rads(float bias, struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) void MPU9250_setGyroBiasY_rads(float bias, struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function sets the gyro bias being used in the Y direction to the input value in units of rad/s.
 
 ```C
@@ -171,7 +223,11 @@ float gyb = 0.001; // gyro bias of 0.001 rad/s
 MPU9250_setGyroBiasY_rads(gyb, &MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) void MPU9250_setGyroBiasZ_rads(float bias, struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) void MPU9250_setGyroBiasZ_rads(float bias, struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function sets the gyro bias being used in the Z direction to the input value in units of rad/s.
 
 ```C
@@ -179,14 +235,22 @@ float gzb = 0.001; // gyro bias of 0.001 rad/s
 MPU9250_setGyroBiasZ_rads(gzb, &MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) int MPU9250_calibrateAccel(struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) int MPU9250_calibrateAccel(struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function will estimate the bias and scale factor needed to calibrate the accelerometers. This function works one axis at a time and needs to be run for all 6 sensor orientations. After it has collected enough sensor data, it will estimate the bias and scale factor for all three accelerometer channels and apply these corrections to the measured data. Accelerometer calibration only needs to be performed once on the IMU, the get and set functions detailed below can be used to retrieve the estimated bias and scale factors and use them during future power cycles or operations with the MPU9250. This function returns a positive value on success and a negative value on failure.
 
 ```C
 status = MPU9250_calibrateAccel(&MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) float MPU9250_getAccelBiasX_mss(struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) float MPU9250_getAccelBiasX_mss(struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function returns the current accelerometer bias in the X direction in units of m/s/s.
 
 ```C
@@ -194,7 +258,11 @@ float axb;
 axb = MPU9250_getAccelBiasX_mss(&MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) float MPU9250_getAccelScaleFactorX(struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) float MPU9250_getAccelScaleFactorX(struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function returns the current accelerometer scale factor in the X direction.
 
 ```C
@@ -202,7 +270,11 @@ float axs;
 axs = MPU9250_getAccelScaleFactorX(&MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) float MPU9250_getAccelBiasY_mss(struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) float MPU9250_getAccelBiasY_mss(struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function returns the current accelerometer bias in the Y direction in units of m/s/s.
 
 ```C
@@ -210,7 +282,11 @@ float ayb;
 ayb = MPU9250_getAccelBiasY_mss(&MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) float MPU9250_getAccelScaleFactorY(struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) float MPU9250_getAccelScaleFactorY(struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function returns the current accelerometer scale factor in the Y direction.
 
 ```C
@@ -218,7 +294,11 @@ float ays;
 ays = MPU9250_getAccelScaleFactorY(&MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) float MPU9250_getAccelBiasZ_mss(struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) float MPU9250_getAccelBiasZ_mss(struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function returns the current accelerometer bias in the Z direction in units of m/s/s.
 
 ```C
@@ -226,7 +306,11 @@ float azb;
 azb = MPU9250_getAccelBiasZ_mss(&MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) float getAccelScaleFactorZ(struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) float getAccelScaleFactorZ(struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function returns the current accelerometer scale factor in the Z direction.
 
 ```C
@@ -234,7 +318,11 @@ float azs;
 azs = MPU9250_getAccelScaleFactorZ(&MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) void MPU9250_setAccelCalX(float bias,float scaleFactor, struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) void MPU9250_setAccelCalX(float bias,float scaleFactor, struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function sets the accelerometer bias (m/s/s) and scale factor being used in the X direction to the input values.
 
 ```C
@@ -243,7 +331,11 @@ float axs = 0.97; // accel scale factor of 0.97
 MPU9250_setAccelCalX(axb, axs, &MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) void MPU9250_setAccelCalY(float bias,float scaleFactor, struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) void MPU9250_setAccelCalY(float bias,float scaleFactor, struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function sets the accelerometer bias (m/s/s) and scale factor being used in the Y direction to the input values.
 
 ```C
@@ -252,7 +344,11 @@ float ays = 0.97; // accel scale factor of 0.97
 MPU9250_setAccelCalY(ayb, ays, &MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) void MPU9250_setAccelCalZ(float bias,float scaleFactor, struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) void MPU9250_setAccelCalZ(float bias,float scaleFactor, struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function sets the accelerometer bias (m/s/s) and scale factor being used in the Z direction to the input values.
 
 ```C
@@ -261,14 +357,22 @@ float azs = 0.97; // accel scale factor of 0.97
 MPU9250_setAccelCalZ(azb, azs, &MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) int MPU9250_calibrateMag(struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) int MPU9250_calibrateMag(struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function will estimate the bias and scale factor needed to calibrate the magnetometers. This function works on all the sensor axes at once, you should continuously and slowly move the sensor in a figure 8 while the function is running. After it has collected enough sensor data, it will estimate the bias and scale factor for all three magnetometer channels and apply these corrections to the measured data. Magnetometer calibration only needs to be performed once on the IMU, unless the eletrical or magnetic environment changes. The get and set functions detailed below can be used to retrieve the estimated bias and scale factors and use them during future power cycles or operations with the MPU9250_ This function returns a positive value on success and a negative value on failure.
 
 ```C
 status = MPU9250_calibrateMag(&MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) float MPU9250_getMagBiasX_uT(struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) float MPU9250_getMagBiasX_uT(struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function returns the current magnetometer bias in the X direction in units of uT.
 
 ```C
@@ -276,7 +380,11 @@ float hxb;
 hxb = MPU9250_getMagBiasX_uT(&MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) float MPU9250_getMagScaleFactorX(struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) float MPU9250_getMagScaleFactorX(struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function returns the current magnetometer scale factor in the X direction.
 
 ```C
@@ -284,7 +392,11 @@ float hxs;
 hxs = MPU9250_getMagScaleFactorX(&MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) float MPU9250_getMagBiasY_uT(struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) float MPU9250_getMagBiasY_uT(struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function returns the current magnetometer bias in the Y direction in units of uT.
 
 ```C
@@ -292,7 +404,11 @@ float hyb;
 hyb = MPU9250_getMagBiasY_uT(&MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) float MPU9250_getMagScaleFactorY(struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) float MPU9250_getMagScaleFactorY(struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function returns the current magnetometer scale factor in the Y direction.
 
 ```C
@@ -300,7 +416,11 @@ float hys;
 hys = MPU9250_getMagScaleFactorY(&MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) float MPU9250_getMagBiasZ_uT(struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) float MPU9250_getMagBiasZ_uT(struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function returns the current magnetometer bias in the Z direction in units of uT.
 
 ```C
@@ -308,7 +428,11 @@ float hzb;
 hzb = MPU9250_getMagBiasZ_uT(&MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) float MPU9250_getMagScaleFactorZ(struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) float MPU9250_getMagScaleFactorZ(struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function returns the current magnetometer scale factor in the Z direction.
 
 ```C
@@ -316,7 +440,11 @@ float hzs;
 hzs = MPU9250_getMagScaleFactorZ(&MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) void MPU9250_setMagCalX(float bias,float scaleFactor, struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) void MPU9250_setMagCalX(float bias,float scaleFactor, struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function sets the magnetometer bias (uT) and scale factor being used in the X direction to the input values.
 
 ```C
@@ -325,7 +453,11 @@ float hxs = 0.97; // mag scale factor of 0.97
 MPU9250_setMagCalX(hxb, hxs, &MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) void MPU9250_setMagCalY(float bias,float scaleFactor, struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) void MPU9250_setMagCalY(float bias,float scaleFactor, struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function sets the magnetometer bias (uT) and scale factor being used in the Y direction to the input values.
 
 ```C
@@ -334,7 +466,11 @@ float hys = 0.97; // mag scale factor of 0.97
 MPU9250_setMagCalY(hyb, hys, &MPU9250_Handle);
 ```
 
+<<<<<<< HEAD
 <b>(optional) void MPU9250_setMagCalZ(float bias,float scaleFactor, struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) void MPU9250_setMagCalZ(float bias,float scaleFactor, struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function sets the magnetometer bias (uT) and scale factor being used in the Z direction to the input values.
 
 ```C
@@ -345,7 +481,11 @@ MPU9250_setMagCalZ(hzb, hzs, &MPU9250_Handle);
 
 #### Wake on Motion Setup
 
+<<<<<<< HEAD
 <b>(optional) int MPU9250_enableWakeOnMotion(float womThresh_mg,LpAccelOdr odr, struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) int MPU9250_enableWakeOnMotion(float womThresh_mg,LpAccelOdr odr, struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function enables the MPU-9250 wake on motion interrupt functionality. It places the MPU-9250 into a low power state, with the MPU-9250 waking up at an interval determined by the Low Power Accelerometer Output Data Rate. If the accelerometer detects motion in excess of the threshold given, it generates a 50us pulse from the MPU-9250 INT pin. The following enumerated Low Power Accelerometer Output Data Rates are supported:
 
 | LpAccelOdr Name      | Output Data Rate |
@@ -373,76 +513,76 @@ status = MPU9250_enableWakeOnMotion(400, LP_ACCEL_ODR_31_25HZ, &MPU9250_Handle);
 The functions below are used to collect data from the MPU-9250 sensor. Data is returned scaled to engineering units.
 
 #### Real-Time Data Collection
-<b>int MPU9250_readSensor(struct MPU9250_Handle_s *MPU9250_Handle)</b>reads the sensor and stores the newest data in a buffer, it should be called every time you would like to retrieve data from the sensor. This function returns a positive value on success and a negative value on failure.
+**int MPU9250_readSensor(struct MPU9250_Handle_s *MPU9250_Handle)** reads the sensor and stores the newest data in a buffer, it should be called every time you would like to retrieve data from the sensor. This function returns a positive value on success and a negative value on failure.
 
 ```C
 MPU9250_readSensor(&MPU9250_Handle);
 ```
 
-<b>float MPU9250_getAccelX_mss(struct MPU9250_Handle_s *MPU9250_Handle)</b>gets the accelerometer value from the data buffer in the X direction and returns it in units of m/s/s.
+**float MPU9250_getAccelX_mss(struct MPU9250_Handle_s *MPU9250_Handle)** gets the accelerometer value from the data buffer in the X direction and returns it in units of m/s/s.
 
 ```C
 float ax;
 ax = MPU9250_getAccelX_mss(&MPU9250_Handle);
 ```
 
-<b>float MPU9250_getAccelY_mss(struct MPU9250_Handle_s *MPU9250_Handle)</b>gets the accelerometer value from the data buffer in the Y direction and returns it in units of m/s/s.
+**float MPU9250_getAccelY_mss(struct MPU9250_Handle_s *MPU9250_Handle)** gets the accelerometer value from the data buffer in the Y direction and returns it in units of m/s/s.
 
 ```C
 float ay;
 ay = MPU9250_getAccelY_mss(&MPU9250_Handle);
 ```
 
-<b>float MPU9250_getAccelZ_mss(struct MPU9250_Handle_s *MPU9250_Handle)</b>gets the accelerometer value from the data buffer in the Z direction and returns it in units of m/s/s.
+**float MPU9250_getAccelZ_mss(struct MPU9250_Handle_s *MPU9250_Handle)** gets the accelerometer value from the data buffer in the Z direction and returns it in units of m/s/s.
 
 ```C
 float az;
 az = MPU9250_getAccelZ_mss(&MPU9250_Handle);
 ```
 
-<b>float MPU9250_getGyroX_rads(struct MPU9250_Handle_s *MPU9250_Handle)</b>gets the gyroscope value from the data buffer in the X direction and returns it in units of rad/s.
+**float MPU9250_getGyroX_rads(struct MPU9250_Handle_s *MPU9250_Handle)** gets the gyroscope value from the data buffer in the X direction and returns it in units of rad/s.
 
 ```C
 float gx;
 gx = MPU9250_getGyroX_rads(&MPU9250_Handle);
 ```
 
-<b>float MPU9250_getGyroY_rads(struct MPU9250_Handle_s *MPU9250_Handle)</b>gets the gyroscope value from the data buffer in the Y direction and returns it in units of rad/s.
+**float MPU9250_getGyroY_rads(struct MPU9250_Handle_s *MPU9250_Handle)** gets the gyroscope value from the data buffer in the Y direction and returns it in units of rad/s.
 
 ```C
 float gy;
 gy = MPU9250_getGyroY_rads(&MPU9250_Handle);
 ```
 
-<b>float MPU9250_getGyroZ_rads(struct MPU9250_Handle_s *MPU9250_Handle)</b>gets the gyroscope value from the data buffer in the Z direction and returns it in units of rad/s.
+**float MPU9250_getGyroZ_rads(struct MPU9250_Handle_s *MPU9250_Handle)** gets the gyroscope value from the data buffer in the Z direction and returns it in units of rad/s.
 
 ```C
 float gz;
 gz = MPU9250_getGyroZ_rads(&MPU9250_Handle);
 ```
 
-<b>float MPU9250_getMagX_uT(struct MPU9250_Handle_s *MPU9250_Handle)</b>gets the magnetometer value from the data buffer in the X direction and returns it in units of uT.
+**float MPU9250_getMagX_uT(struct MPU9250_Handle_s *MPU9250_Handle)** gets the magnetometer value from the data buffer in the X direction and returns it in units of uT.
 
 ```C
 float hx;
 hx = MPU9250_getMagX_uT(&MPU9250_Handle);
 ```
 
-<b>float MPU9250_getMagY_uT(struct MPU9250_Handle_s *MPU9250_Handle)</b>gets the magnetometer value from the data buffer in the Y direction and returns it in units of uT.
+**float MPU9250_getMagY_uT(struct MPU9250_Handle_s *MPU9250_Handle)** gets the magnetometer value from the data buffer in the Y direction and returns it in units of uT.
 
 ```C
 float hy;
 hy = MPU9250_getMagY_uT(&MPU9250_Handle);
 ```
 
-<b>float MPU9250_getMagZ_uT(struct MPU9250_Handle_s *MPU9250_Handle)</b>gets the magnetometer value from the data buffer in the Z direction and returns it in units of uT.
+**float MPU9250_getMagZ_uT(struct MPU9250_Handle_s *MPU9250_Handle)** gets the magnetometer value from the data buffer in the Z direction and returns it in units of uT.
 
 ```C
 float hz;
 hz = MPU9250_getMagZ_uT(&MPU9250_Handle);
 ```
 
-<b>float MPU9250_getTemperature_C(struct MPU9250_Handle_s *MPU9250_Handle)</b>gets the die temperature value from the data buffer and returns it in units of C.
+**float MPU9250_getTemperature_C(struct MPU9250_Handle_s *MPU9250_Handle)** gets the die temperature value from the data buffer and returns it in units of C.
 
 ```C
 float temperature;
@@ -450,7 +590,11 @@ temperature = MPU9250_getTemperature_C(&MPU9250_Handle);
 ```
 
 ### FIFO Setup
+<<<<<<< HEAD
 <b>(optional) int MPU9250_enableFifo(bool accel,bool gyro,bool mag,bool temp, struct MPU9250_Handle_s *MPU9250_Handle</b>
+=======
+**(optional) int MPU9250_enableFifo(bool accel,bool gyro,bool mag,bool temp, struct MPU9250_Handle_s *MPU9250_Handle)**
+>>>>>>> parent of 16886ae... Update README.md
 This function configures and enables the MPU-9250 FIFO buffer. This 512 byte buffer samples data at the data output rate set by the SRD and enables the microcontroller to bulk read the data, reducing microcontroller workload for certain applications. It is configured with a set of boolean values describing which data to buffer in the FIFO: accelerometer, gyroscope, magnetometer, or temperature. The accelerometer and gyroscope data each take 6 bytes of space per sample while the magnetometer takes 7 bytes of space and the temperature 2 bytes. It's important to select only the data sources desired to ensure that the FIFO does not overrun between reading it. For example, enabling all of the data sources would take 21 bytes per sample allowing the FIFO to hold only 24 samples before overflowing. If only the accelerometer data is needed, this increases to 85 samples before overflowing. This function returns a positive value on success and a negative value on failure. The following is an example of enabling the FIFO to buffer accelerometer and gyroscope data. 
 
 ```C
@@ -458,13 +602,13 @@ status = MPU9250_enableFifo(1, 1, 0, 0, &MPU9250_Handle);
 ```
 
 ### FIFO Data Collection
-<b>int MPU9250_readFifo(struct MPU9250_Handle_s *MPU9250_Handle)</b>reads the FIFO buffer from the MPU-9250, parses it and stores the data in buffers on the microcontroller. It should be called every time you would like to retrieve data from the FIFO buffer. This function returns a positive value on success and a negative value on failure.
+**int MPU9250_readFifo(struct MPU9250_Handle_s *MPU9250_Handle)** reads the FIFO buffer from the MPU-9250, parses it and stores the data in buffers on the microcontroller. It should be called every time you would like to retrieve data from the FIFO buffer. This function returns a positive value on success and a negative value on failure.
 
 ```C
 MPU9250_readFifo(&MPU9250_Handle);
 ```
 
-<b>void MPU9250_getFifoAccelX_mss(size_t *size,float* data, struct MPU9250_Handle_s *MPU9250_Handle)</b>gets the accelerometer value from the data buffer in the X direction and returns it in units of m/s/s. The data is returned as an array along with the number of elements within that array. Ensure that the buffer you are transfering to has enough capacity to store the data.
+**void MPU9250_getFifoAccelX_mss(size_t *size,float* data, struct MPU9250_Handle_s *MPU9250_Handle)** gets the accelerometer value from the data buffer in the X direction and returns it in units of m/s/s. The data is returned as an array along with the number of elements within that array. Ensure that the buffer you are transfering to has enough capacity to store the data.
 
 ```C
 float ax[100];
@@ -472,7 +616,7 @@ size_t samples;
 MPU9250_getFifoAccelX_mss(&samples, ax, &MPU9250_Handle);
 ```
 
-<b>void MPU9250_getFifoAccelY_mss(size_t *size,float* data, struct MPU9250_Handle_s *MPU9250_Handle)</b>gets the accelerometer value from the data buffer in the Y direction and returns it in units of m/s/s. The data is returned as an array along with the number of elements within that array. Ensure that the buffer you are transfering to has enough capacity to store the data.
+**void MPU9250_getFifoAccelY_mss(size_t *size,float* data, struct MPU9250_Handle_s *MPU9250_Handle)** gets the accelerometer value from the data buffer in the Y direction and returns it in units of m/s/s. The data is returned as an array along with the number of elements within that array. Ensure that the buffer you are transfering to has enough capacity to store the data.
 
 ```C
 float ay[100];
@@ -480,7 +624,7 @@ size_t samples;
 MPU9250_getFifoAccelY_mss(&samples, ay, &MPU9250_Handle);
 ```
 
-<b>void MPU9250_getFifoAccelZ_mss(size_t *size,float* data, struct MPU9250_Handle_s *MPU9250_Handle)</b>gets the accelerometer value from the data buffer in the Z direction and returns it in units of m/s/s. The data is returned as an array along with the number of elements within that array. Ensure that the buffer you are transfering to has enough capacity to store the data.
+**void MPU9250_getFifoAccelZ_mss(size_t *size,float* data, struct MPU9250_Handle_s *MPU9250_Handle)** gets the accelerometer value from the data buffer in the Z direction and returns it in units of m/s/s. The data is returned as an array along with the number of elements within that array. Ensure that the buffer you are transfering to has enough capacity to store the data.
 
 ```C
 float az[100];
@@ -488,7 +632,7 @@ size_t samples;
 MPU9250_getFifoAccelZ_mss(&samples, az, &MPU9250_Handle);
 ```
 
-<b>void MPU9250_getFifoGyroX_rads(size_t *size,float* data, struct MPU9250_Handle_s *MPU9250_Handle)</b>gets the gyroscope value from the data buffer in the X direction and returns it in units of rad/s. The data is returned as an array along with the number of elements within that array. Ensure that the buffer you are transfering to has enough capacity to store the data.
+**void MPU9250_getFifoGyroX_rads(size_t *size,float* data, struct MPU9250_Handle_s *MPU9250_Handle)** gets the gyroscope value from the data buffer in the X direction and returns it in units of rad/s. The data is returned as an array along with the number of elements within that array. Ensure that the buffer you are transfering to has enough capacity to store the data.
 
 ```C
 float gx[100];
@@ -496,7 +640,7 @@ size_t samples;
 MPU9250_getFifoGyroX_rads(&samples, gx, &MPU9250_Handle);
 ```
 
-<b>void MPU9250_getFifoGyroY_rads(size_t *size,float* data, struct MPU9250_Handle_s *MPU9250_Handle)</b>gets the gyroscope value from the data buffer in the Y direction and returns it in units of rad/s. The data is returned as an array along with the number of elements within that array. Ensure that the buffer you are transfering to has enough capacity to store the data.
+**void MPU9250_getFifoGyroY_rads(size_t *size,float* data, struct MPU9250_Handle_s *MPU9250_Handle)** gets the gyroscope value from the data buffer in the Y direction and returns it in units of rad/s. The data is returned as an array along with the number of elements within that array. Ensure that the buffer you are transfering to has enough capacity to store the data.
 
 ```C
 float gy[100];
@@ -504,7 +648,7 @@ size_t samples;
 MPU9250_getFifoGyroY_rads(&samples, gy, &MPU9250_Handle);
 ```
 
-<b>void MPU9250_getFifoGyroZ_rads(size_t *size,float* data, struct MPU9250_Handle_s *MPU9250_Handle)</b>gets the gyroscope value from the data buffer in the Z direction and returns it in units of rad/s. The data is returned as an array along with the number of elements within that array. Ensure that the buffer you are transfering to has enough capacity to store the data.
+**void MPU9250_getFifoGyroZ_rads(size_t *size,float* data, struct MPU9250_Handle_s *MPU9250_Handle)** gets the gyroscope value from the data buffer in the Z direction and returns it in units of rad/s. The data is returned as an array along with the number of elements within that array. Ensure that the buffer you are transfering to has enough capacity to store the data.
 
 ```C
 float gz[100];
@@ -512,7 +656,7 @@ size_t samples;
 MPU9250_getFifoGyroZ_rads(&samples, gx, &MPU9250_Handle);
 ```
 
-<b>void MPU9250_getFifoMagX_uT(size_t *size,float* data, struct MPU9250_Handle_s *MPU9250_Handle)</b>gets the magnetometer value from the data buffer in the X direction and returns it in units of uT. The data is returned as an array along with the number of elements within that array. Ensure that the buffer you are transfering to has enough capacity to store the data.
+**void MPU9250_getFifoMagX_uT(size_t *size,float* data, struct MPU9250_Handle_s *MPU9250_Handle)** gets the magnetometer value from the data buffer in the X direction and returns it in units of uT. The data is returned as an array along with the number of elements within that array. Ensure that the buffer you are transfering to has enough capacity to store the data.
 
 ```C
 float hx[100];
@@ -520,7 +664,7 @@ size_t samples;
 MPU9250_getFifoMagX_uT(&samples, hx, &MPU9250_Handle);
 ```
 
-<b>void MPU9250_getFifoMagY_uT(size_t *size,float* data, struct MPU9250_Handle_s *MPU9250_Handle)</b>gets the magnetometer value from the data buffer in the Y direction and returns it in units of uT. The data is returned as an array along with the number of elements within that array. Ensure that the buffer you are transfering to has enough capacity to store the data.
+**void MPU9250_getFifoMagY_uT(size_t *size,float* data, struct MPU9250_Handle_s *MPU9250_Handle)** gets the magnetometer value from the data buffer in the Y direction and returns it in units of uT. The data is returned as an array along with the number of elements within that array. Ensure that the buffer you are transfering to has enough capacity to store the data.
 
 ```C
 float hy[100];
@@ -528,7 +672,7 @@ size_t samples;
 MPU9250_getFifoMagY_uT(&samples, hy, &MPU9250_Handle);
 ```
 
-<b>void MPU9250_getFifoMagZ_uT(size_t *size,float* data, struct MPU9250_Handle_s *MPU9250_Handle)</b>gets the magnetometer value from the data buffer in the Z direction and returns it in units of uT. The data is returned as an array along with the number of elements within that array. Ensure that the buffer you are transfering to has enough capacity to store the data.
+**void MPU9250_getFifoMagZ_uT(size_t *size,float* data, struct MPU9250_Handle_s *MPU9250_Handle)** gets the magnetometer value from the data buffer in the Z direction and returns it in units of uT. The data is returned as an array along with the number of elements within that array. Ensure that the buffer you are transfering to has enough capacity to store the data.
 
 ```C
 float hz[100];
@@ -536,7 +680,7 @@ size_t samples;
 MPU9250_getFifoMagZ_uT(&samples, hz, &MPU9250_Handle);
 ```
 
-<b>void MPU9250_getFifoTemperature_C(size_t *size,float* data, struct MPU9250_Handle_s *MPU9250_Handle)</b>gets the die temperature value from the data buffer and returns it in units of C. The data is returned as an array along with the number of elements within that array. Ensure that the buffer you are transfering to has enough capacity to store the data.
+**void MPU9250_getFifoTemperature_C(size_t *size,float* data, struct MPU9250_Handle_s *MPU9250_Handle)** gets the die temperature value from the data buffer and returns it in units of C. The data is returned as an array along with the number of elements within that array. Ensure that the buffer you are transfering to has enough capacity to store the data.
 
 ```C
 float temp[100];
