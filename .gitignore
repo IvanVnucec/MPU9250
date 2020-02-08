@@ -11,10 +11,10 @@ mpu9250.elf.cfg
 mpu9250.elf.launch
 
 
-Inc/*
+Inc/**
 !Inc/mpu9250.h
 
-Src/*
+Src/**
 !Src/mpu9250.c
 
-Middlewares/*
+Middlewares/**
