@@ -1,3 +1,7 @@
+Inc/**
+Src/**
+Src/main.c
+
 .settings
 Debug
 Drivers
@@ -11,10 +15,4 @@ mpu9250.elf.cfg
 mpu9250.elf.launch
 
 
-Inc/**
-!Inc/mpu9250.h
-
-Src/**
-!Src/mpu9250.c
-
-Middlewares/**
+Src/main.c
