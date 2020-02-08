@@ -56,12 +56,9 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-void print_usb(uint8_t *buffer, uint8_t len);
-void float_to_string(uint8_t *buffer, float val);
 void test_success(void);
 void test_failed(void);
 void print_float_usb(float number);
-void println_float_usb(float number);
 
 /* USER CODE END PFP */
 
@@ -125,15 +122,6 @@ int main(void)
   }
 
   test_success();
-
-  // setting the accelerometer full scale range to +/-8G
-  MPU9250_setAccelRange(ACCEL_RANGE_8G, &MPU9250_Handle);
-  // setting the gyroscope full scale range to +/-500 deg/s
-  MPU9250_setGyroRange(GYRO_RANGE_500DPS, &MPU9250_Handle);
-  // setting DLPF bandwidth to 20 Hz
-  MPU9250_setDlpfBandwidth(DLPF_BANDWIDTH_20HZ, &MPU9250_Handle);
-  // setting SRD to 19 for a 50 Hz update rate
-  MPU9250_setSrd(19, &MPU9250_Handle);
 
   /* USER CODE END 2 */
 
@@ -212,47 +200,7 @@ void SystemClock_Config(void)
 
 void print_float_usb(float number) {
 
-	print_usb((uint8_t *)&number, sizeof(float));
-}
-
-void println_float_usb(float number) {
-	uint8_t string[12];
-
-	float_to_string(string, number);
-
-	string[11] = '\n';
-
-	print_usb(string, 12);
-}
-
-void print_usb(uint8_t *buffer, uint8_t len) {
-	while (CDC_Transmit_FS(buffer, len) == USBD_BUSY);
-
-	return;
-}
-
-// string should be 11 bytes in length
-void float_to_string(uint8_t *buffer, float val){
-
-    if (val < 0) {
-        val *= -1;
-        buffer[0] = '-';
-    } else {
-        buffer[0] = ' ';
-    }
-
-    buffer[1]  = (int)val / 10000 + '0';
-    buffer[2]  = (int)val % 10000 / 1000 + '0';
-    buffer[3]  = (int)val % 1000 / 100 + '0';
-	buffer[4]  = (int)val % 100 / 10 + '0';
-	buffer[5]  = (int)val % 10 + '0';
-	buffer[6]  = '.';
-	buffer[7]  = (int)((val - (int)val) * 10) + '0';
-	buffer[8]  = (int)((val - (int)val) * 100) % 10 + '0';
-	buffer[9]  = (int)((val - (int)val) * 1000) % 10 + '0';
-	buffer[10] = (int)((val - (int)val) * 10000) % 10 + '0';
-
-	return;
+	while(CDC_Transmit_FS((uint8_t *)&number, sizeof(float)) != USBD_OK);
 }
 
 void test_success(void) {
