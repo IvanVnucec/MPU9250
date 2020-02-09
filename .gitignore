@@ -1,6 +1,4 @@
-Inc/**
-Src/**
-Src/main.c
+
 
 .settings
 Debug
@@ -13,6 +11,15 @@ mpu9250.ioc
 STM32F103C8TX_FLASH.ld
 mpu9250.elf.cfg
 mpu9250.elf.launch
-
-
+Inc/usb_device.h
+Inc/usbd_cdc_if.h
+Inc/usbd_desc.h
+Inc/usbd_conf.h
 Src/main.c
+Src/usb_device.c
+Src/usbd_cdc_if.c
+Src/usbd_conf.c
+Src/usbd_desc.c
+Src/main.c
+Inc/pid.h
+Src/pid.c

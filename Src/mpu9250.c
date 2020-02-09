@@ -31,20 +31,13 @@
 /* writes a byte to MPU9250 register given a register address and data */
 static int MPU9250_writeRegister(uint8_t subAddress, uint8_t data) {
 	HAL_StatusTypeDef retval;
-	uint32_t num_of_tries;
 
-	num_of_tries = 5;
-	do {
-		retval = HAL_I2C_Mem_Write(&hi2c1, MPU9250_I2C_ADDRESS << 1, subAddress, I2C_MEMADD_SIZE_8BIT, &data, 1, 500);
-		num_of_tries--;
-		if (retval != HAL_OK) {
-			HAL_Delay(20);
-		} else {
-			break;
-		}
-	} while(num_of_tries != 0);
-
-	if (num_of_tries == 0) {
+	/*
+	 DevAddress Target device address: The device 7 bits address value
+	 in datasheet must be shifted to the left before calling the interface
+	 */
+	retval = HAL_I2C_Mem_Write(&hi2c1, MPU9250_I2C_ADDRESS << 1, subAddress, I2C_MEMADD_SIZE_8BIT, &data, 1, 1);
+	if (retval != HAL_OK) {
 		return -1;	// failure
 	} else {
 		return 1;	// success
@@ -55,24 +48,14 @@ static int MPU9250_writeRegister(uint8_t subAddress, uint8_t data) {
 /* reads registers from MPU9250 given a starting register address, number of bytes, and a pointer to store data */
 static int MPU9250_readRegisters(uint8_t subAddress, uint8_t count, uint8_t* dest) {
 	HAL_StatusTypeDef retval;
-	uint32_t num_of_tries;
 
 	/*
 	 DevAddress Target device address: The device 7 bits address value
 	 in datasheet must be shifted to the left before calling the interface
 	 */
-	num_of_tries = 5;
-	 do {
-		retval = HAL_I2C_Mem_Read(&hi2c1, MPU9250_I2C_ADDRESS << 1, subAddress, I2C_MEMADD_SIZE_8BIT, dest, count, 500);
-		num_of_tries--;
-		if (retval != HAL_OK) {
-			HAL_Delay(20);
-		} else {
-			break;
-		}
-	} while(num_of_tries != 0);
+	retval = HAL_I2C_Mem_Read(&hi2c1, MPU9250_I2C_ADDRESS << 1, subAddress, I2C_MEMADD_SIZE_8BIT, dest, count, 1);
 
-	if (num_of_tries == 0) {
+	if (retval != HAL_OK) {
 		return -1;	// failure
 	} else {
 		return 1;	// success

@@ -29,6 +29,7 @@
 #include "mpu9250.h"
 #include "usbd_cdc_if.h"
 #include <string.h>
+#include <pid.h>
 
 /* USER CODE END Includes */
 
@@ -75,6 +76,7 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
   struct MPU9250_Handle_s MPU9250_Handle;
+  PID_Handle_t hpid1;
 
   /* USER CODE END 1 */
   
@@ -85,6 +87,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
+
 
   /* USER CODE END Init */
 
@@ -123,6 +126,9 @@ int main(void)
 
   test_success();
 
+  PID_Config(&hpid1, 1.0, 1.0, 0.0, 0.02, 20.0);
+  PID_Init(&hpid1);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -132,22 +138,24 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  MPU9250_readSensor(&MPU9250_Handle);
+	  if(MPU9250_readSensor(&MPU9250_Handle) > 0) {
 
-	  print_float_usb(MPU9250_getAccelX_mss(&MPU9250_Handle));
-	  print_float_usb(MPU9250_getAccelY_mss(&MPU9250_Handle));
-	  print_float_usb(MPU9250_getAccelZ_mss(&MPU9250_Handle));
+		  print_float_usb(MPU9250_getAccelX_mss(&MPU9250_Handle));
+		  print_float_usb(MPU9250_getAccelY_mss(&MPU9250_Handle));
+		  print_float_usb(MPU9250_getAccelZ_mss(&MPU9250_Handle));
 
-	  print_float_usb(MPU9250_getGyroX_rads(&MPU9250_Handle));
-	  print_float_usb(MPU9250_getGyroY_rads(&MPU9250_Handle));
-	  print_float_usb(MPU9250_getGyroZ_rads(&MPU9250_Handle));
+		  print_float_usb(MPU9250_getGyroX_rads(&MPU9250_Handle));
+	  	  print_float_usb(MPU9250_getGyroY_rads(&MPU9250_Handle));
+	  	  print_float_usb(MPU9250_getGyroZ_rads(&MPU9250_Handle));
 
-	  print_float_usb(MPU9250_getMagX_uT(&MPU9250_Handle));
-	  print_float_usb(MPU9250_getMagY_uT(&MPU9250_Handle));
-	  print_float_usb(MPU9250_getMagZ_uT(&MPU9250_Handle));
+	  	  print_float_usb(MPU9250_getMagX_uT(&MPU9250_Handle));
+	  	  print_float_usb(MPU9250_getMagY_uT(&MPU9250_Handle));
+	  	  print_float_usb(MPU9250_getMagZ_uT(&MPU9250_Handle));
 
-	  print_float_usb(MPU9250_getTemperature_C(&MPU9250_Handle));
+	  	  print_float_usb(MPU9250_getTemperature_C(&MPU9250_Handle));
 
+	  	  print_float_usb(PID_Regulate(&hpid1, -9.31, MPU9250_getAccelZ_mss(&MPU9250_Handle)));
+	  }
   }
   /* USER CODE END 3 */
 }
@@ -200,7 +208,7 @@ void SystemClock_Config(void)
 
 void print_float_usb(float number) {
 
-	while(CDC_Transmit_FS((uint8_t *)&number, sizeof(float)) != USBD_OK);
+	while (CDC_Transmit_FS((uint8_t *)&number, sizeof(float)) != USBD_OK);
 }
 
 void test_success(void) {
