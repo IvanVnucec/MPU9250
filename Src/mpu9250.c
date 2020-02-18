@@ -162,6 +162,9 @@ int MPU9250_begin(struct MPU9250_Handle_s *MPU9250_Handle) {
 
 	// gyro bias estimation
 	MPU9250_Handle->_numSamples = 100;
+	MPU9250_Handle->_gxb = 0.0f;
+	MPU9250_Handle->_gyb = 0.0f;
+	MPU9250_Handle->_gzb = 0.0f;
 
 	// accel bias and scale factor estimation
 	MPU9250_Handle->_axb = 0.0f;
