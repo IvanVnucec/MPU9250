@@ -1,0 +1,19 @@
+name: build
+
+on: [workflow_dispatch, push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Install dependencies
+      run: make install_deps 
+
+    - name: Configure CMake
+      run: make setup_cmake
+
+    - name: Build
+      run: make build
