@@ -12,7 +12,7 @@ int user_defined_i2c_read_function(uint8_t subAddress, uint8_t count, uint8_t* d
     // TODO
 }
 
-int user_defined_delay_function(float ms)
+void user_defined_delay_function(unsigned ms)
 {
     // TODO
 }

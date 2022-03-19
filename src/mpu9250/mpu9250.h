@@ -45,7 +45,7 @@ typedef enum LpAccelOdr {
 
 typedef int (*MPU9250_writeRegister_T)(uint8_t subAddress, uint8_t data);
 typedef int (*MPU9250_readRegisters_T)(uint8_t subAddress, uint8_t count, uint8_t* dest);
-typedef int (*MPU9250_delayMiliSec_T)(float ms);
+typedef void (*MPU9250_delayMiliSec_T)(unsigned ms);
 
 
 typedef struct {
