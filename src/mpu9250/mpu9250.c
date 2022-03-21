@@ -9,7 +9,7 @@
 #include <math.h>
 #include <string.h>
 
-#include "mpu9250.h"
+#include "mpu9250/mpu9250.h"
 
 /* Private typedef -----------------------------------------------------------*/
 
