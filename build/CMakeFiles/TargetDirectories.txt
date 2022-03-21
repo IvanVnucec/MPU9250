@@ -1,3 +1,0 @@
-/home/ivan/Desktop/MPU9250/build/CMakeFiles/rebuild_cache.dir
-/home/ivan/Desktop/MPU9250/build/CMakeFiles/edit_cache.dir
-/home/ivan/Desktop/MPU9250/build/CMakeFiles/mpu9250.dir
