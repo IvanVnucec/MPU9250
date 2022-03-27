@@ -264,6 +264,9 @@ int MPU9250_begin(MPU9250_writeRegister_T MPU9250_writeRegister,
 		return -13;
 	}
 
+	// delay because we got successive initialization failures (WHO AM I was 0x00)
+	MPU9250_Handle->MPU9250_delayMiliSec(1);
+	
 	// check AK8963 WHO AM I register, expected value is 0x48 (decimal 72)
 	if (MPU9250_whoAmIAK8963(MPU9250_Handle) != 72) {
 		return -14;
